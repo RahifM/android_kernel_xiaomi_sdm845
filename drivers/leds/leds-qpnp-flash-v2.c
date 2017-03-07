@@ -849,14 +849,14 @@ static int qpnp_flash_led_calc_max_current(struct qpnp_flash_led *led,
 	}
 
 	rc = get_property_from_fg(led, POWER_SUPPLY_PROP_VOLTAGE_OCV, &ocv_uv);
-	if (rc < 0) {
+	if (rc) {
 		pr_err("bms psy does not support OCV, rc=%d\n", rc);
 		return rc;
 	}
 
 	rc = get_property_from_fg(led, POWER_SUPPLY_PROP_CURRENT_NOW,
 			&ibat_now);
-	if (rc < 0) {
+	if (rc) {
 		pr_err("bms psy does not support current, rc=%d\n", rc);
 		return rc;
 	}
@@ -998,14 +998,14 @@ static int qpnp_flash_led_calc_bharger_max_current(struct qpnp_flash_led *led,
 	}
 
 	rc = get_property_from_fg(led, POWER_SUPPLY_PROP_VOLTAGE_OCV, &ocv_uv);
-	if (rc < 0) {
+	if (rc) {
 		pr_err("bms psy does not support OCV, rc=%d\n", rc);
 		return rc;
 	}
 
 	rc = get_property_from_fg(led, POWER_SUPPLY_PROP_CURRENT_NOW,
 			&ibat_now);
-	if (rc < 0) {
+	if (rc) {
 		pr_err("bms psy does not support current, rc=%d\n", rc);
 		return rc;
 	}
