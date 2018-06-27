@@ -3245,8 +3245,12 @@ void walt_irq_work(struct irq_work *irq_work)
 	struct sched_cluster *cluster;
 	struct rq *rq;
 	int cpu;
+<<<<<<< HEAD
 	u64 wc, total_grp_load = 0;
 	int flag = SCHED_CPUFREQ_WALT;
+=======
+	u64 wc;
+>>>>>>> 4e6276a374fe (sched: cpufreq: stop ignoring util updates)
 	bool is_migration = false;
 	int level = 0;
 
@@ -3292,16 +3296,16 @@ void walt_irq_work(struct irq_work *irq_work)
 
 	for_each_sched_cluster(cluster) {
 		for_each_cpu(cpu, &cluster->cpus) {
-			int nflag = flag;
+			int nflag = 0;
 
 			rq = cpu_rq(cpu);
 
 			if (is_migration) {
 				if (rq->notif_pending) {
-					nflag |= SCHED_CPUFREQ_INTERCLUSTER_MIG;
+					nflag = SCHED_CPUFREQ_INTERCLUSTER_MIG;
 					rq->notif_pending = false;
 				} else {
-					nflag |= SCHED_CPUFREQ_FORCE_UPDATE;
+					nflag = SCHED_CPUFREQ_FORCE_UPDATE;
 				}
 			}
 
