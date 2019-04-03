@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -211,6 +215,7 @@ struct cam_csiphy_param {
  * @csiphy_reg_ptr: Regulator structure
  * @csiphy_3p_clk_info: 3Phase clock information
  * @csiphy_3p_clk: 3Phase clocks structure
+ * @csiphy_clk_index: Timer Src clk index
  * @csi_3phase: Is it a 3Phase mode
  * @ref_count: Reference count
  * @clk_lane: Clock lane
@@ -229,6 +234,7 @@ struct csiphy_device {
 	uint32_t csiphy_max_clk;
 	struct msm_cam_clk_info csiphy_3p_clk_info[2];
 	struct clk *csiphy_3p_clk[2];
+	uint32_t csiphy_clk_index;
 	unsigned char csi_3phase;
 	int32_t ref_count;
 	uint16_t lane_mask[MAX_CSIPHY];

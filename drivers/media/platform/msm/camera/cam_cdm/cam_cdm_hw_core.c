@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -1124,7 +1128,6 @@ static struct platform_driver cam_hw_cdm_driver = {
 		.name = "msm_cam_cdm",
 		.owner = THIS_MODULE,
 		.of_match_table = msm_cam_hw_cdm_dt_match,
-		.suppress_bind_attrs = true,
 	},
 };
 

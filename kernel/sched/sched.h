@@ -2890,6 +2890,7 @@ find_first_cpu_bit(struct task_struct *p, const cpumask_t *search_cpus,
 #define find_first_cpu_bit(...) -1
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 static inline void sched_irq_work_queue(struct irq_work *work)
 {
@@ -2899,3 +2900,16 @@ static inline void sched_irq_work_queue(struct irq_work *work)
 		irq_work_queue_on(work, cpumask_any(cpu_online_mask));
 }
 #endif
+=======
+#ifdef CONFIG_PACKAGE_RUNTIME_INFO
+void __weak update_task_runtime_info(struct task_struct *tsk, u64 delta, int run_on_bcore)
+{
+	return;
+}
+
+void __weak init_task_runtime_info(struct task_struct *tsk)
+{
+	return;
+}
+#endif
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)

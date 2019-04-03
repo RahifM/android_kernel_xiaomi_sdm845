@@ -46,8 +46,7 @@ enum cam_smmu_region_id {
 	CAM_SMMU_REGION_SHARED,
 	CAM_SMMU_REGION_SCRATCH,
 	CAM_SMMU_REGION_IO,
-	CAM_SMMU_REGION_SECHEAP,
-	CAM_SMMU_REGION_QDSS
+	CAM_SMMU_REGION_SECHEAP
 };
 
 /**
@@ -367,6 +366,7 @@ int cam_smmu_reserve_sec_heap(int32_t smmu_hdl,
  */
 int cam_smmu_release_sec_heap(int32_t smmu_hdl);
 
+<<<<<<< HEAD
 /**
  * @brief Allocates qdss for context bank
  *
@@ -401,4 +401,6 @@ int cam_smmu_dealloc_qdss(int32_t smmu_hdl);
 int cam_smmu_get_io_region_info(int32_t smmu_hdl,
 	dma_addr_t *iova, size_t *len);
 
+=======
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)
 #endif /* _CAM_SMMU_API_H_ */

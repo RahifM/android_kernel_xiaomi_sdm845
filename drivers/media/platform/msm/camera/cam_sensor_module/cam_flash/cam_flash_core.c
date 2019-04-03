@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -456,7 +460,7 @@ static int cam_flash_ops(struct cam_flash_ctrl *flash_ctrl,
 				else
 					curr = soc_private->torch_op_current[i];
 
-				CAM_DBG(CAM_PERF,
+				CAM_DBG(CAM_FLASH,
 					"Led_Current[%d] = %d", i, curr);
 				cam_res_mgr_led_trigger_event(
 					flash_ctrl->torch_trigger[i],
@@ -474,7 +478,7 @@ static int cam_flash_ops(struct cam_flash_ctrl *flash_ctrl,
 				else
 					curr = soc_private->flash_op_current[i];
 
-				CAM_DBG(CAM_PERF, "LED flash_current[%d]: %d",
+				CAM_DBG(CAM_FLASH, "LED flash_current[%d]: %d",
 					i, curr);
 				cam_res_mgr_led_trigger_event(
 					flash_ctrl->flash_trigger[i],
@@ -496,10 +500,24 @@ static int cam_flash_ops(struct cam_flash_ctrl *flash_ctrl,
 
 int cam_flash_off(struct cam_flash_ctrl *flash_ctrl)
 {
+	int i = 0;
+
 	if (!flash_ctrl) {
 		CAM_ERR(CAM_FLASH, "Flash control Null");
 		return -EINVAL;
 	}
+
+	for (i = 0; i < flash_ctrl->flash_num_sources; i++)
+		if (flash_ctrl->flash_trigger[i])
+			cam_res_mgr_led_trigger_event(
+				flash_ctrl->flash_trigger[i],
+				LED_OFF);
+
+	for (i = 0; i < flash_ctrl->torch_num_sources; i++)
+		if (flash_ctrl->torch_trigger[i])
+			cam_res_mgr_led_trigger_event(
+				flash_ctrl->torch_trigger[i],
+				LED_OFF);
 
 	if (flash_ctrl->switch_trigger)
 		cam_res_mgr_led_trigger_event(flash_ctrl->switch_trigger,
@@ -601,9 +619,10 @@ static int cam_flash_pmic_delete_req(struct cam_flash_ctrl *fctrl,
 	uint64_t req_id)
 {
 	int i = 0;
+	int frame_offset = 0;
 	struct cam_flash_frame_setting *flash_data = NULL;
-	uint64_t top = 0, del_req_id = 0;
 
+<<<<<<< HEAD
 	if (req_id != 0) {
 		for (i = 0; i < MAX_PER_FRAME_ARRAY; i++) {
 			flash_data = &fctrl->per_frame[i];
@@ -726,6 +745,30 @@ int cam_flash_i2c_apply_setting(struct cam_flash_ctrl *fctrl,
 					return rc;
 				}
 			}
+=======
+	if (req_id == 0) {
+		flash_data = &fctrl->nrt_info;
+		if ((fctrl->nrt_info.cmn_attr.cmd_type ==
+			CAMERA_SENSOR_FLASH_CMD_TYPE_WIDGET) ||
+			(fctrl->nrt_info.cmn_attr.cmd_type ==
+			CAMERA_SENSOR_FLASH_CMD_TYPE_RER)) {
+			flash_data->cmn_attr.is_settings_valid = false;
+			for (i = 0; i < flash_data->cmn_attr.count; i++)
+				flash_data->led_current_ma[i] = 0;
+		} else {
+			fctrl->flash_init_setting.cmn_attr.
+				is_settings_valid = false;
+		}
+	} else {
+		frame_offset = (req_id + MAX_PER_FRAME_ARRAY -
+			CAM_FLASH_PIPELINE_DELAY) % 8;
+		flash_data = &fctrl->per_frame[frame_offset];
+		if (req_id > flash_data->cmn_attr.request_id) {
+			flash_data->cmn_attr.request_id = 0;
+			flash_data->cmn_attr.is_settings_valid = false;
+			for (i = 0; i < flash_data->cmn_attr.count; i++)
+				flash_data->led_current_ma[i] = 0;
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)
 		}
 	}
 
@@ -745,10 +788,6 @@ int cam_flash_pmic_apply_setting(struct cam_flash_ctrl *fctrl,
 		if (fctrl->nrt_info.cmn_attr.cmd_type ==
 			CAMERA_SENSOR_FLASH_CMD_TYPE_INIT_FIRE) {
 			flash_data = &fctrl->nrt_info;
-			CAM_DBG(CAM_REQ,
-				"FLASH_INIT_FIRE req_id: %u flash_opcode: %d",
-				req_id, flash_data->opcode);
-
 			if (flash_data->opcode ==
 				CAMERA_SENSOR_FLASH_OP_FIREHIGH) {
 				if (fctrl->flash_state ==
@@ -811,10 +850,6 @@ int cam_flash_pmic_apply_setting(struct cam_flash_ctrl *fctrl,
 		} else if (fctrl->nrt_info.cmn_attr.cmd_type ==
 			CAMERA_SENSOR_FLASH_CMD_TYPE_WIDGET) {
 			flash_data = &fctrl->nrt_info;
-			CAM_DBG(CAM_REQ,
-				"FLASH_WIDGET req_id: %u flash_opcode: %d",
-				req_id, flash_data->opcode);
-
 			if (flash_data->opcode ==
 				CAMERA_SENSOR_FLASH_OP_FIRELOW) {
 				rc = cam_flash_low(fctrl, flash_data);
@@ -844,8 +879,6 @@ int cam_flash_pmic_apply_setting(struct cam_flash_ctrl *fctrl,
 					goto nrt_del_req;
 				}
 			}
-			CAM_DBG(CAM_REQ, "FLASH_RER req_id: %u", req_id);
-
 			num_iterations = flash_data->num_iterations;
 			for (i = 0; i < num_iterations; i++) {
 				/* Turn On Torch */
@@ -879,8 +912,6 @@ int cam_flash_pmic_apply_setting(struct cam_flash_ctrl *fctrl,
 	} else {
 		frame_offset = req_id % MAX_PER_FRAME_ARRAY;
 		flash_data = &fctrl->per_frame[frame_offset];
-		CAM_DBG(CAM_REQ, "FLASH_RT req_id: %u flash_opcode: %d",
-			req_id, flash_data->opcode);
 
 		if ((flash_data->opcode == CAMERA_SENSOR_FLASH_OP_FIREHIGH) &&
 			(flash_data->cmn_attr.is_settings_valid) &&
@@ -918,13 +949,13 @@ int cam_flash_pmic_apply_setting(struct cam_flash_ctrl *fctrl,
 					"Flash off failed %d", rc);
 				goto apply_setting_err;
 			}
+<<<<<<< HEAD
 		} else if (flash_data->opcode == CAM_PKT_NOP_OPCODE) {
 			CAM_DBG(CAM_FLASH, "NOP Packet");
+=======
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)
 		} else {
-			rc = -EINVAL;
-			CAM_ERR(CAM_FLASH, "Invalid opcode: %d req_id: %llu",
-				flash_data->opcode, req_id);
-			goto apply_setting_err;
+			CAM_DBG(CAM_FLASH, "NOP opcode: req_id: %u", req_id);
 		}
 	}
 
@@ -943,7 +974,7 @@ int cam_flash_i2c_pkt_parser(struct cam_flash_ctrl *fctrl, void *arg)
 	uint16_t cmd_length_in_bytes = 0;
 	uint32_t *cmd_buf =  NULL;
 	uint32_t *offset = NULL;
-	uint32_t frm_offset = 0;
+	uint32_t frame_offset = 0;
 	size_t len_of_buffer;
 	size_t remain_len;
 	struct cam_flash_init *flash_init = NULL;
@@ -1290,7 +1321,6 @@ int cam_flash_pmic_pkt_parser(struct cam_flash_ctrl *fctrl, void *arg)
 	struct cam_flash_set_rer *flash_rer_info = NULL;
 	struct cam_flash_set_on_off *flash_operation_info = NULL;
 	struct cam_flash_query_curr *flash_query_info = NULL;
-	struct cam_flash_frame_setting *flash_data = NULL;
 
 	if (!fctrl || !arg) {
 		CAM_ERR(CAM_FLASH, "fctrl/arg is NULL");
@@ -1432,19 +1462,25 @@ int cam_flash_pmic_pkt_parser(struct cam_flash_ctrl *fctrl, void *arg)
 	case CAM_FLASH_PACKET_OPCODE_SET_OPS: {
 		offset = (uint32_t *)((uint8_t *)&csl_packet->payload +
 			csl_packet->cmd_buf_offset);
-		frm_offset = csl_packet->header.request_id %
+		frame_offset = csl_packet->header.request_id %
 			MAX_PER_FRAME_ARRAY;
-		flash_data = &fctrl->per_frame[frm_offset];
-
-		if (flash_data->cmn_attr.is_settings_valid == true) {
-			flash_data->cmn_attr.request_id = 0;
-			flash_data->cmn_attr.is_settings_valid = false;
-			for (i = 0; i < flash_data->cmn_attr.count; i++)
-				flash_data->led_current_ma[i] = 0;
+		if (fctrl->per_frame[frame_offset].cmn_attr.is_settings_valid
+			== true) {
+			fctrl->per_frame[frame_offset].cmn_attr.request_id = 0;
+			fctrl->per_frame[frame_offset].
+				cmn_attr.is_settings_valid = false;
+			for (i = 0;
+			i < fctrl->per_frame[frame_offset].cmn_attr.count;
+			i++) {
+				fctrl->per_frame[frame_offset].
+					led_current_ma[i] = 0;
+			}
 		}
 
-		flash_data->cmn_attr.request_id = csl_packet->header.request_id;
-		flash_data->cmn_attr.is_settings_valid = true;
+		fctrl->per_frame[frame_offset].cmn_attr.request_id =
+			csl_packet->header.request_id;
+		fctrl->per_frame[frame_offset].cmn_attr.is_settings_valid =
+			true;
 		cmd_desc = (struct cam_cmd_buf_desc *)(offset);
 		rc = cam_mem_get_cpu_buf(cmd_desc->mem_handle,
 			&generic_ptr, &len_of_buffer);
@@ -1478,7 +1514,8 @@ int cam_flash_pmic_pkt_parser(struct cam_flash_ctrl *fctrl, void *arg)
 					CAM_FLASH_STATE_ACQUIRE)) {
 				CAM_WARN(CAM_FLASH,
 					"Rxed Flash fire ops without linking");
-				flash_data->cmn_attr.is_settings_valid = false;
+				fctrl->per_frame[frame_offset].
+					cmn_attr.is_settings_valid = false;
 				return 0;
 			}
 			if (remain_len < sizeof(struct cam_flash_set_on_off)) {
@@ -1499,14 +1536,26 @@ int cam_flash_pmic_pkt_parser(struct cam_flash_ctrl *fctrl, void *arg)
 				return -EINVAL;
 			}
 
-			flash_data->opcode = flash_operation_info->opcode;
-			flash_data->cmn_attr.count =
+			fctrl->per_frame[frame_offset].opcode =
+				flash_operation_info->opcode;
+			fctrl->per_frame[frame_offset].cmn_attr.count =
 				flash_operation_info->count;
+<<<<<<< HEAD
 			for (i = 0; i < flash_operation_info->count; i++)
 				flash_data->led_current_ma[i]
 				= flash_operation_info->led_current_ma[i];
 		}
 		break;
+=======
+			for (i = 0;
+				i < flash_operation_info->count; i++)
+				fctrl->per_frame[frame_offset].
+					led_current_ma[i]
+					= flash_operation_info->
+					led_current_ma[i];
+			}
+			break;
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)
 		default:
 			CAM_ERR(CAM_FLASH, "Wrong cmd_type = %d",
 				cmn_hdr->cmd_type);
@@ -1646,21 +1695,23 @@ int cam_flash_pmic_pkt_parser(struct cam_flash_ctrl *fctrl, void *arg)
 		break;
 	}
 	case CAM_PKT_NOP_OPCODE: {
-		frm_offset = csl_packet->header.request_id %
-			MAX_PER_FRAME_ARRAY;
 		if ((fctrl->flash_state == CAM_FLASH_STATE_INIT) ||
 			(fctrl->flash_state == CAM_FLASH_STATE_ACQUIRE)) {
 			CAM_WARN(CAM_FLASH,
 				"Rxed NOP packets without linking");
-			fctrl->per_frame[frm_offset].cmn_attr.is_settings_valid
-				= false;
+			fctrl->per_frame[frame_offset].
+				cmn_attr.is_settings_valid = false;
 			return 0;
 		}
 
+<<<<<<< HEAD
 		fctrl->per_frame[frm_offset].cmn_attr.is_settings_valid = false;
 		fctrl->per_frame[frm_offset].cmn_attr.request_id = 0;
 		fctrl->per_frame[frm_offset].opcode = CAM_PKT_NOP_OPCODE;
 		CAM_DBG(CAM_FLASH, "NOP Packet is Received: req_id: %llu",
+=======
+		CAM_DBG(CAM_FLASH, "NOP Packet is Received: req_id: %u",
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)
 			csl_packet->header.request_id);
 		goto update_req_mgr;
 	}
@@ -1779,15 +1830,28 @@ int cam_flash_apply_request(struct cam_req_mgr_apply_request *apply)
 	fctrl = (struct cam_flash_ctrl *) cam_get_device_priv(apply->dev_hdl);
 	if (!fctrl) {
 		CAM_ERR(CAM_FLASH, "Device data is NULL");
-		return -EINVAL;
+		rc = -EINVAL;
+		goto free_resource;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&fctrl->flash_mutex);
 	rc = fctrl->func_tbl.apply_setting(fctrl, apply->request_id);
 	if (rc)
 		CAM_ERR(CAM_FLASH, "apply_setting failed with rc=%d",
 			rc);
 	mutex_unlock(&fctrl->flash_mutex);
+=======
+	if (!(apply->report_if_bubble)) {
+		mutex_lock(&fctrl->flash_wq_mutex);
+		rc = cam_flash_apply_setting(fctrl, apply->request_id);
+		if (rc)
+			CAM_ERR(CAM_FLASH, "apply_setting failed with rc=%d",
+				rc);
+		mutex_unlock(&fctrl->flash_wq_mutex);
+	}
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)
 
+free_resource:
 	return rc;
 }

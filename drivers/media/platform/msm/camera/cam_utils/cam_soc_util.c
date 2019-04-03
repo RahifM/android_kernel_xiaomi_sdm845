@@ -15,9 +15,9 @@
 #include <linux/slab.h>
 #include <linux/gpio.h>
 #include <linux/of_gpio.h>
-#include <soc/qcom/socinfo.h>
 #include "cam_soc_util.h"
 #include "cam_debug_util.h"
+<<<<<<< HEAD
 #include <linux/nvmem-consumer.h>
 
 uint32_t cam_soc_util_get_soc_id(void)
@@ -264,6 +264,8 @@ static void cam_soc_util_remove_clk_lvl_debugfs(
 	debugfs_remove_recursive(soc_info->dentry);
 	soc_info->dentry = NULL;
 }
+=======
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)
 
 int cam_soc_util_get_level_from_string(const char *string,
 	enum cam_vote_level *level)
@@ -401,18 +403,7 @@ int cam_soc_util_set_clk_flags(struct cam_hw_soc_info *soc_info,
 	return clk_set_flags(soc_info->clk[clk_index], flags);
 }
 
-/**
- * cam_soc_util_set_clk_rate()
- *
- * @brief:          Sets the given rate for the clk requested for
- *
- * @clk:            Clock structure information for which rate is to be set
- * @clk_name:       Name of the clock for which rate is being set
- * @clk_rate        Clock rate to be set
- *
- * @return:         Success or failure
- */
-static int cam_soc_util_set_clk_rate(struct clk *clk, const char *clk_name,
+int cam_soc_util_set_clk_rate(struct clk *clk, const char *clk_name,
 	int32_t clk_rate)
 {
 	int rc = 0;
@@ -454,26 +445,6 @@ static int cam_soc_util_set_clk_rate(struct clk *clk, const char *clk_name,
 	}
 
 	return rc;
-}
-
-int cam_soc_util_set_src_clk_rate(struct cam_hw_soc_info *soc_info,
-	int32_t clk_rate)
-{
-	int32_t src_clk_idx;
-	struct clk *clk = NULL;
-
-	if (!soc_info || (soc_info->src_clk_idx < 0))
-		return -EINVAL;
-
-	if (soc_info->clk_level_override && clk_rate)
-		clk_rate = soc_info->clk_level_override;
-
-	src_clk_idx = soc_info->src_clk_idx;
-	clk = soc_info->clk[src_clk_idx];
-
-	return cam_soc_util_set_clk_rate(clk,
-		soc_info->clk_name[src_clk_idx], clk_rate);
-
 }
 
 int cam_soc_util_clk_put(struct clk **clk)
@@ -643,6 +614,57 @@ clk_disable:
 }
 
 /**
+ * cam_soc_util_clk_enable_backward()
+ *
+ * @brief:              This function enables the default clocks present
+ *                      in soc_info backward
+ *
+ * @soc_info:           Device soc struct to be populated
+ * @clk_level:          Clk level to apply while enabling
+ *
+ * @return:             success or failure
+ */
+int cam_soc_util_clk_enable_backward(struct cam_hw_soc_info *soc_info,
+	enum cam_vote_level clk_level)
+{
+	int i, rc = 0;
+	enum cam_vote_level apply_level;
+
+	if ((soc_info->num_clk == 0) ||
+		(soc_info->num_clk >= CAM_SOC_MAX_CLK)) {
+		CAM_ERR(CAM_UTIL, "Invalid number of clock %d",
+			soc_info->num_clk);
+		return -EINVAL;
+	}
+
+	rc = cam_soc_util_get_clk_level_to_apply(soc_info, clk_level,
+		&apply_level);
+	if (rc)
+		return rc;
+
+	for (i = soc_info->num_clk - 1; i >= 0; i--) {
+		CAM_ERR(CAM_UTIL, "backward dev name %s enable clk %s i %d leve %d rate %d",
+				soc_info->dev_name, soc_info->clk_name[i], i, apply_level,
+				soc_info->clk_rate[apply_level][i]);
+		rc = cam_soc_util_clk_enable(soc_info->clk[i],
+			soc_info->clk_name[i],
+			soc_info->clk_rate[apply_level][i]);
+		if (rc)
+			goto clk_disable;
+	}
+
+	return rc;
+
+clk_disable:
+	for (i++; i < soc_info->num_clk; i++) {
+		cam_soc_util_clk_disable(soc_info->clk[i],
+			soc_info->clk_name[i]);
+	}
+
+	return rc;
+}
+
+/**
  * cam_soc_util_clk_disable_default()
  *
  * @brief:              This function disables the default clocks present
@@ -682,7 +704,6 @@ static int cam_soc_util_get_dt_clk_info(struct cam_hw_soc_info *soc_info)
 	int i, j, rc;
 	int32_t num_clk_level_strings;
 	const char *src_clk_str = NULL;
-	const char *clk_control_debugfs = NULL;
 	const char *clk_cntl_lvl_string = NULL;
 	enum cam_vote_level level;
 
@@ -796,7 +817,8 @@ static int cam_soc_util_get_dt_clk_info(struct cam_hw_soc_info *soc_info)
 	if (rc || !src_clk_str) {
 		CAM_DBG(CAM_UTIL, "No src_clk_str found");
 		rc = 0;
-		goto end;
+		/* Bottom loop is dependent on src_clk_str. So return here */
+		return rc;
 	}
 
 	for (i = 0; i < soc_info->num_clk; i++) {
@@ -808,18 +830,6 @@ static int cam_soc_util_get_dt_clk_info(struct cam_hw_soc_info *soc_info)
 		}
 	}
 
-	rc = of_property_read_string_index(of_node,
-		"clock-control-debugfs", 0, &clk_control_debugfs);
-	if (rc || !clk_control_debugfs) {
-		CAM_DBG(CAM_UTIL, "No clock_control_debugfs property found");
-		rc = 0;
-		goto end;
-	}
-
-	if (strcmp("true", clk_control_debugfs) == 0)
-		soc_info->clk_control_enable = true;
-
-end:
 	return rc;
 }
 
@@ -1507,9 +1517,6 @@ int cam_soc_util_request_platform_resource(
 		goto put_clk;
 	}
 
-	if (soc_info->clk_control_enable)
-		cam_soc_util_create_clk_lvl_debugfs(soc_info);
-
 	return rc;
 
 put_clk:
@@ -1594,9 +1601,6 @@ int cam_soc_util_release_platform_resource(struct cam_hw_soc_info *soc_info)
 	/* release for gpio */
 	cam_soc_util_request_gpio_table(soc_info, false);
 
-	if (soc_info->clk_control_enable)
-		cam_soc_util_remove_clk_lvl_debugfs(soc_info);
-
 	return 0;
 }
 
@@ -1616,6 +1620,12 @@ int cam_soc_util_enable_platform_resource(struct cam_hw_soc_info *soc_info,
 
 	if (enable_clocks) {
 		rc = cam_soc_util_clk_enable_default(soc_info, clk_level);
+		if (rc && soc_info->dev_name) {
+			if (!strncmp(soc_info->dev_name, "soc:qcom,bps", sizeof("soc:qcom,bps"))) {
+				CAM_ERR(CAM_UTIL, "try set clk backward for qcom,bps");
+				rc = cam_soc_util_clk_enable_backward(soc_info, clk_level);
+			}
+		}
 		if (rc)
 			goto disable_regulator;
 	}

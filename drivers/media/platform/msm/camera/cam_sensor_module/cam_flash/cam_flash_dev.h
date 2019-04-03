@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -91,10 +95,10 @@ struct cam_flash_intf_params {
  * @cmd_type           : Command buffer type
  */
 struct cam_flash_common_attr {
-	bool      is_settings_valid;
-	uint64_t  request_id;
-	uint16_t  count;
-	uint8_t   cmd_type;
+	bool     is_settings_valid;
+	int32_t  request_id;
+	uint16_t count;
+	uint8_t  cmd_type;
 };
 
 /**

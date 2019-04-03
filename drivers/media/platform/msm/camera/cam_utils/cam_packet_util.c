@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -209,6 +213,7 @@ int cam_packet_util_process_patches(struct cam_packet *packet,
 			patch_desc[i].dst_buf_hdl, patch_desc[i].dst_offset,
 			patch_desc[i].src_buf_hdl, patch_desc[i].src_offset);
 
+<<<<<<< HEAD
 		if ((size_t)patch_desc[i].src_offset >= src_buf_size) {
 			CAM_ERR(CAM_UTIL,
 				"Invalid src buf patch offset");
@@ -223,6 +228,8 @@ int cam_packet_util_process_patches(struct cam_packet *packet,
 			return -EINVAL;
 		}
 
+=======
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)
 		dst_cpu_addr = (uint32_t *)((uint8_t *)dst_cpu_addr +
 			patch_desc[i].dst_offset);
 		temp += patch_desc[i].src_offset;

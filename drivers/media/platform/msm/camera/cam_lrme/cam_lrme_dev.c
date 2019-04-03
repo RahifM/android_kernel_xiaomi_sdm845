@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2017-2018, 2021 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -227,7 +231,6 @@ static struct platform_driver cam_lrme_driver = {
 		.name = "cam_lrme",
 		.owner = THIS_MODULE,
 		.of_match_table = cam_lrme_dt_match,
-		.suppress_bind_attrs = true,
 	},
 };
 

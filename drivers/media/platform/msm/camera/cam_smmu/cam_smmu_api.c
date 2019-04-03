@@ -110,11 +110,8 @@ struct cam_context_bank_info {
 	uint8_t shared_support;
 	uint8_t io_support;
 	uint8_t secheap_support;
-	uint8_t qdss_support;
-	dma_addr_t qdss_phy_addr;
 	bool is_fw_allocated;
 	bool is_secheap_allocated;
-	bool is_qdss_allocated;
 
 	struct scratch_mapping scratch_map;
 	struct gen_pool *shared_mem_pool;
@@ -124,7 +121,6 @@ struct cam_context_bank_info {
 	struct cam_smmu_region_info shared_info;
 	struct cam_smmu_region_info io_info;
 	struct cam_smmu_region_info secheap_info;
-	struct cam_smmu_region_info qdss_info;
 	struct secheap_buf_info secheap_buf;
 
 	struct list_head smmu_buf_list;
@@ -183,8 +179,6 @@ struct cam_sec_buff_info {
 	int ion_fd;
 	size_t len;
 };
-
-static const char *qdss_region_name = "qdss";
 
 static struct cam_iommu_cb_set iommu_cb_set;
 
@@ -1246,6 +1240,7 @@ end:
 }
 EXPORT_SYMBOL(cam_smmu_dealloc_firmware);
 
+<<<<<<< HEAD
 int cam_smmu_alloc_qdss(int32_t smmu_hdl,
 	dma_addr_t *iova,
 	size_t *len)
@@ -1412,6 +1407,8 @@ int cam_smmu_get_io_region_info(int32_t smmu_hdl,
 	return 0;
 }
 
+=======
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)
 int cam_smmu_get_region_info(int32_t smmu_hdl,
 	enum cam_smmu_region_id region_id,
 	struct cam_smmu_region_info *region_info)
@@ -3272,7 +3269,6 @@ static int cam_smmu_get_memory_regions_info(struct device_node *of_node,
 		uint32_t region_start;
 		uint32_t region_len;
 		uint32_t region_id;
-		uint32_t qdss_region_phy_addr = 0;
 
 		num_regions++;
 		rc = of_property_read_string(child_node,
@@ -3307,17 +3303,6 @@ static int cam_smmu_get_memory_regions_info(struct device_node *of_node,
 			return -EINVAL;
 		}
 
-		if (strcmp(region_name, qdss_region_name) == 0) {
-			rc = of_property_read_u32(child_node,
-				"qdss-phy-addr", &qdss_region_phy_addr);
-			if (rc < 0) {
-				of_node_put(mem_map_node);
-				CAM_ERR(CAM_SMMU,
-					"Failed to read qdss phy addr");
-				return -EINVAL;
-			}
-		}
-
 		switch (region_id) {
 		case CAM_SMMU_REGION_FIRMWARE:
 			cb->firmware_support = 1;
@@ -3343,12 +3328,6 @@ static int cam_smmu_get_memory_regions_info(struct device_node *of_node,
 			cb->secheap_support = 1;
 			cb->secheap_info.iova_start = region_start;
 			cb->secheap_info.iova_len = region_len;
-			break;
-		case CAM_SMMU_REGION_QDSS:
-			cb->qdss_support = 1;
-			cb->qdss_info.iova_start = region_start;
-			cb->qdss_info.iova_len = region_len;
-			cb->qdss_phy_addr = qdss_region_phy_addr;
 			break;
 		default:
 			CAM_ERR(CAM_SMMU,
@@ -3460,7 +3439,6 @@ static int cam_smmu_probe(struct platform_device *pdev)
 		rc = cam_populate_smmu_context_banks(dev, CAM_ARM_SMMU);
 		if (rc < 0) {
 			CAM_ERR(CAM_SMMU, "Error: populating context banks");
-			cam_smmu_release_cb(pdev);
 			return -ENOMEM;
 		}
 		return rc;
@@ -3511,7 +3489,6 @@ static struct platform_driver cam_smmu_driver = {
 		.name = "msm_cam_smmu",
 		.owner = THIS_MODULE,
 		.of_match_table = msm_cam_smmu_dt_match,
-		.suppress_bind_attrs = true,
 	},
 };
 
