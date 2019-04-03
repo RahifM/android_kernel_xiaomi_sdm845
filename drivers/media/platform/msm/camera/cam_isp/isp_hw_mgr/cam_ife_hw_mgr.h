@@ -13,7 +13,6 @@
 #ifndef _CAM_IFE_HW_MGR_H_
 #define _CAM_IFE_HW_MGR_H_
 
-#include <linux/completion.h>
 #include "cam_isp_hw_mgr.h"
 #include "cam_vfe_hw_intf.h"
 #include "cam_ife_csid_hw_intf.h"
@@ -94,6 +93,15 @@ struct cam_ife_hw_mgr_debug {
 	uint32_t       camif_debug;
 };
 
+/* enum cam_ife_hw_mgr_ctx_state - state of the context */
+enum cam_ife_hw_mgr_ctx_state {
+	CAM_IFE_HW_MGR_CTX_AVAILABLE = 0,
+	CAM_IFE_HW_MGR_CTX_ACQUIRED  = 1,
+	CAM_IFE_HW_MGR_CTX_STARTED   = 2,
+	CAM_IFE_HW_MGR_CTX_STOPPED   = 3,
+	CAM_IFE_HW_MGR_CTX_PAUSED    = 4,
+};
+
 /**
  * struct cam_vfe_hw_mgr_ctx - IFE HW manager Context object
  *
@@ -101,7 +109,7 @@ struct cam_ife_hw_mgr_debug {
  * @common:                 common acquired context data
  * @ctx_index:              acquired context id.
  * @hw_mgr:                 IFE hw mgr which owns this context
- * @ctx_in_use:             flag to tell whether context is active
+ * @ctx_state:              state of the conxtext
  * @res_list_ife_in:        Starting resource(TPG,PHY0, PHY1...) Can only be
  *                          one.
  * @res_list_csid:          CSID resource list
@@ -124,8 +132,11 @@ struct cam_ife_hw_mgr_debug {
  * @overflow_pending        flat to specify the overflow is pending for the
  *                          context
  * @is_rdi_only_context     flag to specify the context has only rdi resource
+<<<<<<< HEAD
  * @config_done_complete    indicator for configuration complete
  * @init_done               indicate whether init hw is done
+=======
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)
  */
 struct cam_ife_hw_mgr_ctx {
 	struct list_head                list;
@@ -133,7 +144,7 @@ struct cam_ife_hw_mgr_ctx {
 
 	uint32_t                        ctx_index;
 	struct cam_ife_hw_mgr          *hw_mgr;
-	uint32_t                        ctx_in_use;
+	enum cam_ife_hw_mgr_ctx_state   ctx_state;
 
 	struct cam_ife_hw_mgr_res       res_list_ife_in;
 	struct list_head                res_list_ife_cid;
@@ -158,8 +169,11 @@ struct cam_ife_hw_mgr_ctx {
 	uint32_t                        eof_cnt[CAM_IFE_HW_NUM_MAX];
 	atomic_t                        overflow_pending;
 	uint32_t                        is_rdi_only_context;
+<<<<<<< HEAD
 	struct completion               config_done_complete;
 	bool                            init_done;
+=======
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)
 };
 
 /**

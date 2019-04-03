@@ -93,10 +93,13 @@ enum cam_isp_hw_cmd_type {
 	CAM_ISP_HW_CMD_CLOCK_UPDATE,
 	CAM_ISP_HW_CMD_BW_UPDATE,
 	CAM_ISP_HW_CMD_BW_CONTROL,
+<<<<<<< HEAD
 	CAM_ISP_HW_CMD_STOP_BUS_ERR_IRQ,
 	CAM_ISP_HW_CMD_GET_REG_DUMP,
 	CAM_ISP_HW_CMD_SOF_IRQ_DEBUG,
 	CAM_ISP_HW_CMD_SET_CAMIF_DEBUG,
+=======
+>>>>>>> 7680936256f6 (Import minimal xiaomi/dipper-p-oss changes)
 	CAM_ISP_HW_CMD_MAX,
 };
 
