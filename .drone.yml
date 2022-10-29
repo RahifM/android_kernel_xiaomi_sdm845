@@ -1,0 +1,14 @@
+kind: pipeline
+name: Karmel Drone
+
+clone:
+  depth: 1
+
+steps:
+ - name: compile
+   image: ubuntu:20.04
+   commands:
+          - apt-get update -y
+          - apt-get install git make gcc wget bc pigz fakeroot mkbootimg zipalign cpio -y
+          - git clone https://github.com/sabmohmaya/arm32-gcc -b 9 --depth 1 && git clone https://github.com/sabmohmaya/arm64-gcc -b 9 --depth 1
+          - bash build_master.sh

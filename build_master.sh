@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 if [[ "${1}" != "skip" ]] ; then
 	./build_clean.sh
 	./build_kernel.sh stock "$@" || exit 1
