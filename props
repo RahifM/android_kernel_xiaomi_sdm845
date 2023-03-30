@@ -1,0 +1,11 @@
+
+kernel.string=arter97 kernel r11 @ xda-developers
+do.devicecheck=1
+do.modules=0
+do.cleanup=1
+do.cleanuponabort=0
+device.name1=beryllium
+block=/dev/block/bootdevice/by-name/boot
+is_slot_device=auto
+ramdisk_compression=auto
+
