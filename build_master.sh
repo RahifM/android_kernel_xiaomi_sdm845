@@ -1,6 +1,8 @@
 #!/bin/bash
 
 #set -e
+export KERNELDIR=`readlink -f .`
+echo "kerneldir = $KERNELDIR"
 
 if [[ "${1}" != "skip" ]] ; then
 	./build_clean.sh
@@ -28,7 +30,7 @@ block=/dev/block/bootdevice/by-name/boot
 is_slot_device=auto
 ramdisk_compression=auto
 " > kernelzip/props
-	cp -rp ~/android/anykernel2/* kernelzip/
+	cp -rp $KERNELDIR/anykernel2/* kernelzip/
 	cd kernelzip/
 	7z a -mx0 arter97-kernel-$VERSION-tmp.zip *
 	zipalign -v 4 arter97-kernel-$VERSION-tmp.zip ../arter97-kernel-$VERSION.zip
