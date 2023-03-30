@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+#set -e
 
 if [[ "${1}" != "skip" ]] ; then
 	./build_clean.sh
