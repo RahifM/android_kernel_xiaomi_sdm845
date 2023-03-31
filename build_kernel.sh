@@ -2,7 +2,8 @@
 export KERNELDIR=`readlink -f .`
 export RAMFS_SOURCE=`readlink -f $KERNELDIR/ramdisk`
 export PARTITION_SIZE=67108864
-
+TG=$HOME/telegram.sh/telegram
+LOG=$KERNELDIR/bl*.txt
 export OS="9.0.0"
 export SPL="2019-02"
 
@@ -13,6 +14,15 @@ RAMFS_TMP="/tmp/arter97-dipper-ramdisk"
 
 echo "ramfs_tmp = $RAMFS_TMP"
 cd $KERNELDIR
+
+if [ -d "$HOME/telegram.sh" ]; then
+	echo "Tgsh already exists"
+else
+git clone https://github.com/fabianonline/telegram.sh $HOME/telegram.sh
+mv .telegram.sh $HOME/.telegram.sh
+sed -i s/demo1/${BOT_API_KEY}/g $HOME/.telegram.sh
+sed -i s/demo2/${CHAT_ID}/g $HOME/.telegram.sh
+fi
 
 if [ -d "arm32-gcc" ]; then
 	echo "arm32-gcc already exists"
@@ -36,7 +46,12 @@ if [[ "${1}" == "skip" ]] ; then
 else
 	echo "Compiling kernel"
 	cp defconfig .config
-	make -j$(nproc --all) "$@" || exit 1
+	make -j$(nproc --all) 2>&1 | tee bl-$(date +'%Y%m%d-%H%M').txt "$@" || exit 1
+fi
+
+if [ "$(grep Image.gz $LOG | cut -d / -f 4)" == "" ] ; then
+	$TG -f $LOG "Kernel compilation failed."
+	exit 1
 fi
 
 echo "Building new ramdisk"

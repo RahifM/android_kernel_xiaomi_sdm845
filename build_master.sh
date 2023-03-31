@@ -4,6 +4,10 @@
 export KERNELDIR=`readlink -f .`
 echo "kerneldir = $KERNELDIR"
 
+TG=$HOME/telegram.sh/telegram
+LOG=$KERNELDIR/bl*.txt
+LOG2=$KERNELDIR/wbl*.txt
+
 if [[ "${1}" != "skip" ]] ; then
 	./build_clean.sh
 	./build_kernel.sh stock "$@" || exit 1
@@ -37,4 +41,13 @@ ramdisk_compression=auto
 	rm arter97-kernel-$VERSION-tmp.zip
 	cd ..
 	ls -al arter97-kernel-$VERSION.zip
+	$TG -f arter97-kernel-$VERSION.zip "$(cat $KERNELDIR/include/generated/uts* | cut -d '"' -f 2)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/comp*h | grep LINUX_COMPILER | cut -d '"' -f 2)"
+	$TG -f $LOG
+	# TEMP
+	grep warning* $LOG > w$(ls $LOG | rev | cut -d / -f 1 | rev)
+	if [ "$(cat $LOG2)" == "" ]; then
+		echo no warning
+	else
+		$TG -f $LOG2
+	fi
 fi
