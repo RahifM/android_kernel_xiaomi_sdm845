@@ -14,6 +14,17 @@ RAMFS_TMP="/tmp/arter97-dipper-ramdisk"
 echo "ramfs_tmp = $RAMFS_TMP"
 cd $KERNELDIR
 
+if [ -d "arm32-gcc" ]; then
+	echo "arm32-gcc already exists"
+else
+	git clone https://github.com/rahifm/arm32-gcc -b master --depth 1
+fi
+if [ -d "arm64-gcc" ]; then
+	echo "arm64-gcc already exists"
+else
+	git clone https://github.com/rahifm/arm64-gcc -b master --depth 1
+fi
+
 stock=0
 if [[ "${1}" == "stock" ]] ; then
 	stock=1

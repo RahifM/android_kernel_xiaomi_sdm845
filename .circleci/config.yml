@@ -11,7 +11,6 @@ jobs:
             sudo apt-get install mkbootimg p7zip-full zipalign -y
             git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git beryllium --depth=1 --branch=$CIRCLE_BRANCH
             cd beryllium
-            git clone https://github.com/rahifm/arm32-gcc -b master --depth 1 && git clone https://github.com/rahifm/arm64-gcc -b master --depth 1
             bash build_master.sh
 workflows:
   kermel-workflow:
