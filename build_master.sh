@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #set -e
+export TZ='Asia/Kolkata'
 export KERNELDIR=`readlink -f .`
 echo "kerneldir = $KERNELDIR"
 
@@ -13,10 +14,10 @@ if [[ "${1}" != "skip" ]] ; then
 	./build_kernel.sh stock "$@" || exit 1
 fi
 
-VERSION="$(cat version)-$(date +%F | sed s@-@@g)"
+VERSION="$(cat version)-$(date +'%Y%m%d-%H%M')"
 
 if [ -e boot.img ] ; then
-	rm arter97-kernel-$VERSION.zip 2>/dev/null
+	rm arter97-beryllium-$VERSION.zip 2>/dev/null
 
 	# Pack AnyKernel2
 	rm -rf kernelzip
@@ -36,12 +37,13 @@ ramdisk_compression=auto
 " > kernelzip/props
 	cp -rp $KERNELDIR/anykernel2/* kernelzip/
 	cd kernelzip/
-	7z a -mx0 arter97-kernel-$VERSION-tmp.zip *
-	zipalign -v 4 arter97-kernel-$VERSION-tmp.zip ../arter97-kernel-$VERSION.zip
-	rm arter97-kernel-$VERSION-tmp.zip
+	7z a -mx0 arter97-beryllium-$VERSION-tmp.zip *
+	zipalign -v 4 arter97-beryllium-$VERSION-tmp.zip ../arter97-beryllium-$VERSION.zip
+	rm arter97-beryllium-$VERSION-tmp.zip
 	cd ..
-	ls -al arter97-kernel-$VERSION.zip
-	$TG -f arter97-kernel-$VERSION.zip "$(cat $KERNELDIR/include/generated/uts* | cut -d '"' -f 2)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/comp*h | grep LINUX_COMPILER | cut -d '"' -f 2)"
+	ls -al arter97-beryllium-$VERSION.zip
+	$TG -f arter97-beryllium-$VERSION.zip "$(cat $KERNELDIR/include/generated/uts* | cut -d '"' -f 2)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/comp*h | grep LINUX_COMPILER | cut -d '"' -f 2)"
+	mv $LOG bl-$(ls arter*zip | rev | cut -d / -f 1 | rev | cut -d . -f 2 | cut -d - -f 2-).txt
 	$TG -f $LOG
 	# TEMP
 	grep warning* $LOG > w$(ls $LOG | rev | cut -d / -f 1 | rev)
