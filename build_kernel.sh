@@ -24,7 +24,7 @@ if [[ "${1}" == "skip" ]] ; then
 	echo "Skipping Compilation"
 else
 	echo "Compiling kernel"
-	cp defconfig .config
+	make arter_beryllium_defconfig
 	make "$@" || exit 1
 fi
 
