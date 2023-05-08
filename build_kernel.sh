@@ -45,7 +45,8 @@ if [[ "${1}" == "skip" ]] ; then
 	echo "Skipping Compilation"
 else
 	echo "Compiling kernel"
-	cp defconfig .config
+	#cp defconfig .config
+	make arter_beryllium_defconfig
 	make -j$(nproc --all) 2>&1 | tee bl-$(date +'%Y%m%d-%H%M').txt "$@" || exit 1
 fi
 
