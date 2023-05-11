@@ -45,6 +45,7 @@ if [[ "${1}" == "skip" ]] ; then
 	echo "Skipping Compilation"
 else
 	echo "Compiling kernel"
+	$TG "Build started $(date +'%Y%m%d %H%M %Z')"$'\n'$'\n'"Branch: $(git branch --show-current)"$'\n'$'\n'"HEAD: $(git log -n 1 --oneline)"
 	#cp defconfig .config
 	make arter_beryllium_defconfig
 	make -j$(nproc --all) 2>&1 | tee bl-$(date +'%Y%m%d-%H%M').txt "$@" || exit 1
