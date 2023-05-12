@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   kermel:
     machine:
-      image: ubuntu-2204:2022.10.2
+      image: ubuntu-2204:current
     steps:
       - run:
           name: "build"
