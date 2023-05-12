@@ -1,0 +1,23 @@
+version: 2.1
+jobs:
+  build-and-test:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - run: echo "hello"
+  build-test-and-push:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - run: echo "hello"
+workflows:
+  basic-workflow:
+    jobs:
+      - build-and-test:
+          filters:
+            branches:
+              ignore: staging/arter97-r11/cirrusci
+      #- build-test-and-push:
+       #   filters:
+          #  branches:
+             # only: staging/arter97-r11/cirrusci
