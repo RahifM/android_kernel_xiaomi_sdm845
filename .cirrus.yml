@@ -1,0 +1,18 @@
+env:
+    CIRRUS_CLONE_DEPTH: 1
+    BOT_API_KEY: "ENCRYPTED[!468b8669160662b0e872abe10599b229e0c7edc7e942cf5c8c6f97c853885dd58b17ce5550418d39c4e69017a0f45ffd!]"
+    CHAT_ID: "ENCRYPTED[!9f47f28725357e6e0895f7c7f725ec7c03a677886c2a5f4425e90354aff458e6a7caaee50862047005e6860d703de063!]"
+
+task:
+  name: "Kermel-Builder"
+  timeout_in: 2h
+  container:
+      image: ubuntu:22.04
+      cpu: 8
+      memory: 32G
+
+  Build_script:
+      - apt-get update -y
+      - DEBIAN_FRONTEND=noninteractive apt-get install git build-essential curl bc pigz cpio mkbootimg p7zip-full zipalign tzdata locales -y
+      - locale-gen en_US en_US.UTF-8
+      - bash build_master.sh
