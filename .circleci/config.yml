@@ -1,18 +1,23 @@
 version: 2.1
 jobs:
-  kermel:
-    machine:
-      image: ubuntu-2204:2022.10.2
+  build-and-test:
+    docker:
+      - image: cimg/base:stable
     steps:
-      - run:
-          name: "build"
-          command: |
-            sudo apt-get update -y
-            sudo apt-get install mkbootimg p7zip-full zipalign -y
-            git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git beryllium --depth=1 --branch=$CIRCLE_BRANCH
-            cd beryllium
-            bash build_master.sh
+      - run: echo "hello"
+  build-test-and-push:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - run: echo "hello"
 workflows:
-  kermel-workflow:
+  basic-workflow:
     jobs:
-      - kermel
+      - build-and-test:
+          filters:
+            branches:
+              ignore: staging/arter97-r11/ramoops
+      #- build-test-and-push:
+       #   filters:
+          #  branches:
+             # only: staging/arter97-r11/ramoops

@@ -1,0 +1,18 @@
+version: 2.1
+jobs:
+  kermel:
+    machine:
+      image: ubuntu-2204:current
+    steps:
+      - run:
+          name: "build"
+          command: |
+            sudo apt-get update -y
+            sudo apt-get install mkbootimg p7zip-full zipalign -y
+            git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git beryllium --depth=1 --branch=$CIRCLE_BRANCH
+            cd beryllium
+            bash build_master.sh
+workflows:
+  kermel-workflow:
+    jobs:
+      - kermel

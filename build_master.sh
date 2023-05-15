@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #set -e
-export TZ='Asia/Kolkata'
+export TZ='Asia/Kolkata' && date
 export KERNELDIR=`readlink -f .`
 echo "kerneldir = $KERNELDIR"
 
