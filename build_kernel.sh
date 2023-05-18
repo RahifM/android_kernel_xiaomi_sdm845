@@ -47,6 +47,9 @@ else
 	echo "Compiling kernel"
 	$TG "Build started $(date +'%Y%m%d %H%M %Z')"$'\n'$'\n'"Branch: $(git branch --show-current)"$'\n'$'\n'"HEAD: $(git log -n 1 --oneline)"
 	#cp defconfig .config
+	rm -rf bl-*.txt
+	rm -rf wbl-*.txt
+	rm -rf arter97-beryllium*.zip
 	make arter_beryllium_defconfig
 	make -j$(nproc --all) 2>&1 | tee bl-$(date +'%Y%m%d-%H%M').txt "$@" || exit 1
 fi
