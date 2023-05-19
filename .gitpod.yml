@@ -1,0 +1,12 @@
+tasks:
+  - name: Kermel
+    init: |
+      time sudo apt install bc fakeroot mkbootimg p7zip-full zipalign cpio pigz -y
+      time bash $HOME/scripts/misc.sh || { git clone https://github.com/RahifM/scripts $HOME/scripts && bash $HOME/scripts/misc.sh; }
+      git config --global user.name "rahifm"
+      git config --global user.email "rahifmanjatha372@gmail.com"
+      git config --global core.editor vim
+      git config --global credential.helper store
+      echo "https://rahifm:$PASSWORD@github.com" > ~/.git-credentials
+    command: | 
+      time bash build_master.sh
