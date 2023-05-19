@@ -19,7 +19,7 @@ if [ -d "$HOME/telegram.sh" ]; then
 	echo "Tgsh already exists"
 else
 git clone https://github.com/fabianonline/telegram.sh $HOME/telegram.sh
-mv .telegram.sh $HOME/.telegram.sh
+cp .telegram.sh $HOME/.telegram.sh
 sed -i s/demo1/${BOT_API_KEY}/g $HOME/.telegram.sh
 sed -i s/demo2/${CHAT_ID}/g $HOME/.telegram.sh
 fi
