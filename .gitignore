@@ -132,3 +132,6 @@ arm64-gcc
 bl-*.txt
 wbl-*.txt
 arter97-beryllium*.zip
+
+# KSU
+drivers/kernelsu
