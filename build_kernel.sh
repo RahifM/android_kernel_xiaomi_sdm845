@@ -41,6 +41,11 @@ if [[ "${1}" == "stock" ]] ; then
 	shift
 fi
 
+if [ "$(whoami)" == "gitpod" ]; then
+        echo "Clean up for gitpod"
+	make clean && make mrproper
+fi
+
 if [[ "${1}" == "skip" ]] ; then
 	echo "Skipping Compilation"
 else
