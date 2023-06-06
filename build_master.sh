@@ -22,8 +22,8 @@ if [ -e boot.img ] ; then
 	# Pack AnyKernel2
 	rm -rf kernelzip
 	mkdir -p kernelzip/dtbs
-	cp arch/arm64/boot/Image.gz kernelzip/
-	find arch/arm64/boot -name '*.dtb' -exec cp {} kernelzip/dtbs/ \;
+	cp out/arch/arm64/boot/Image.gz kernelzip/
+	find out/arch/arm64/boot -name '*.dtb' -exec cp {} kernelzip/dtbs/ \;
 	echo "
 kernel.string=arter97 kernel $(cat version) @ xda-developers
 do.devicecheck=1
@@ -42,7 +42,7 @@ ramdisk_compression=auto
 	rm arter97-beryllium-$VERSION-tmp.zip
 	cd ..
 	ls -al arter97-beryllium-$VERSION.zip
-	$TG -f arter97-beryllium-$VERSION.zip "$(cat $KERNELDIR/include/generated/uts* | cut -d '"' -f 2)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/comp*h | grep LINUX_COMPILER | cut -d '"' -f 2)"$'\n'$'\n'"HEAD: $(git log -n 1 --oneline)"
+	$TG -f arter97-beryllium-$VERSION.zip "$(cat $KERNELDIR/out/include/generated/uts* | cut -d '"' -f 2)"$'\n'$'\n'"$(cat $KERNELDIR/out/include/generated/comp*h | grep LINUX_COMPILER | cut -d '"' -f 2)"$'\n'$'\n'"HEAD: $(git log -n 1 --oneline)"
 	mv $LOG bl-$(ls arter*zip | rev | cut -d / -f 1 | rev | cut -d . -f 2 | cut -d - -f 2-).txt
 	$TG -f $LOG
 	# TEMP
