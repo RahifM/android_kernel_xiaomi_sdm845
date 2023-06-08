@@ -31,4 +31,4 @@ jobs:
       run: |
         sudo apt-get update -y
         sudo apt-get install mkbootimg zipalign -y
-        bash build_master.sh
+        bash build_kernel.sh
