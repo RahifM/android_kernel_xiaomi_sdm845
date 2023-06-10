@@ -12,7 +12,7 @@ LOG2=$KERNELDIR/wbl*.txt
 if [ -d "$HOME/telegram.sh" ]; then
 	echo "Tgsh already exists"
 else
-git clone https://github.com/fabianonline/telegram.sh $HOME/telegram.sh
+time git clone https://github.com/fabianonline/telegram.sh $HOME/telegram.sh
 cp .telegram.sh $HOME/.telegram.sh
 sed -i s/demo1/${BOT_API_KEY}/g $HOME/.telegram.sh
 sed -i s/demo2/${CHAT_ID}/g $HOME/.telegram.sh
@@ -21,17 +21,17 @@ fi
 if [ -d "arm32-gcc" ]; then
 	echo "arm32-gcc already exists"
 else
-	git clone https://github.com/rahifm/arm32-gcc -b gcc-13.1.0 --depth 1
+	time git clone https://github.com/rahifm/arm32-gcc -b gcc-13.1.0 --depth 1
 fi
 if [ -d "arm64-gcc" ]; then
 	echo "arm64-gcc already exists"
 else
-	git clone https://github.com/rahifm/arm64-gcc -b gcc-13.1.0 --depth 1
+	time git clone https://github.com/rahifm/arm64-gcc -b gcc-13.1.0 --depth 1
 fi
 
 if [ "$(whoami)" == "gitpod" ]; then
         echo "Clean up for gitpod"
-	make clean && make mrproper
+	time make clean && make mrproper
 fi
 
 echo "Compiling kernel"
@@ -44,7 +44,7 @@ rm -rf arter97-beryllium*.zip
 
 # Start the build
 make arter_beryllium_defconfig
-make -j$(nproc --all) 2>&1 | tee bl-$(date +'%Y%m%d-%H%M').txt
+time make -j$(nproc --all) 2>&1 | tee bl-$(date +'%Y%m%d-%H%M').txt
 
 if [ "$(grep Image.gz $LOG | cut -d / -f 4)" == "" ] ; then
 	$TG -f $LOG "Kernel compilation failed."
