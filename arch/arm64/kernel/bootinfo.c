@@ -102,7 +102,7 @@ type get_##name(void)				\
 {						\
 	return name;				\
 }						\
-void set_##name(type __##name)			\
+void set_##name(u32 __##name)			\
 {						\
 	name = __##name;			\
 }
@@ -220,7 +220,7 @@ static ssize_t poweroff_reason_show(struct kobject *kobj,
 bootinfo_attr(poweroff_reason);
 bootinfo_attr(powerup_reason);
 bootinfo_attr(powerup_reason_details);
-bootinfo_func_init(u32, powerup_reason, 0);
+bootinfo_func_init(powerup_reason_t, powerup_reason, 0);
 
 static struct attribute *g[] = {
 	&poweroff_reason_attr.attr,
