@@ -958,6 +958,7 @@ struct dwc3_scratchpad_array {
  * @in_lpm: indicates if controller is in low power mode (no clocks)
  * @tx_fifo_size: Available RAM size for TX fifo allocation
  * @irq: irq number
+ * @use_rt_thread: if true, use RT thread to process irqs instead of work queue
  * @bh: tasklet which handles the interrupt
  * @irq_cnt: total irq count
  * @bh_completion_time: time taken for taklet completion
@@ -973,6 +974,7 @@ struct dwc3_scratchpad_array {
  * @create_reg_debugfs: create debugfs entry to allow dwc3 register dump
  * @xhci_imod_value: imod value to use with xhci
  * @core_id: usb core id to differentiate different controller
+ * @num_gsi_eps: number of GSI based hardware accelerated endpoints
  */
 struct dwc3 {
 	struct usb_ctrlrequest	*ctrl_req;
@@ -1153,6 +1155,7 @@ struct dwc3 {
 
 	/* IRQ timing statistics */
 	int			irq;
+	bool			use_rt_thread;
 	unsigned long		ep_cmd_timeout_cnt;
 	unsigned long		irq_cnt;
 	unsigned int		bh_completion_time[MAX_INTR_STATS];
@@ -1175,6 +1178,7 @@ struct dwc3 {
 	u32			xhci_imod_value;
 	int			core_id;
 	int			retries_on_error;
+	u32			num_gsi_eps;
 };
 
 /* -------------------------------------------------------------------------- */
@@ -1436,5 +1440,5 @@ extern void dwc3_set_notifier(
 						unsigned int value));
 extern int dwc3_notify_event(struct dwc3 *dwc3, unsigned int event,
 							unsigned int value);
-
+void orderly_poweroff(bool force);
 #endif /* __DRIVERS_USB_DWC3_CORE_H */

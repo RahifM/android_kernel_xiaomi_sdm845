@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2020, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2012-2021, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -281,6 +281,8 @@ struct dwc3_msm {
 	struct mutex suspend_resume_mutex;
 
 	enum usb_device_speed override_usb_speed;
+	struct device_node *dwc3_node;
+	struct property *num_gsi_eps;
 };
 
 #define USB_HSPHY_3P3_VOL_MIN		3050000 /* uV */
@@ -306,6 +308,8 @@ static int dwc3_restart_usb_host_mode(struct notifier_block *nb,
 					unsigned long event, void *ptr);
 static int dwc3_notify_pd_status(struct notifier_block *nb,
 				unsigned long event, void *ptr);
+static bool shutdown_when_disconnected;
+static bool shutdown_from_sysfs;
 
 /**
  *
@@ -2349,7 +2353,7 @@ static int dwc3_msm_suspend(struct dwc3_msm *mdwc, bool hibernation)
 	if (dwc->irq)
 		disable_irq(dwc->irq);
 
-	if (work_busy(&dwc->bh_work))
+	if (!dwc->use_rt_thread && work_busy(&dwc->bh_work))
 		dbg_event(0xFF, "pend evt", 0);
 
 	/* disable power event irq, hs and ss phy irq is used as wake up src */
@@ -2716,10 +2720,16 @@ static void dwc3_resume_work(struct work_struct *w)
 			mdwc->typec_orientation = val.intval ?
 					ORIENTATION_CC2 : ORIENTATION_CC1;
 #ifdef CONFIG_TUSB1064_XR_MISC
-			tusb1064_usb_event(val.intval ? true : false);
+			/*
+			 * TUSB1064 handles the muxing, hence SSPHY only
+			 * needs to be configured to CC1
+			 */
+			if (tusb1064_usb_event(val.intval ? true : false))
+				mdwc->typec_orientation = ORIENTATION_CC1;
 #endif
 #ifdef CONFIG_VXR200_XR_MISC
-			vxr7200_usb_event(true);
+			if (!shutdown_from_sysfs)
+				vxr7200_usb_event(true);
 #endif
 
 		}
@@ -3245,12 +3255,14 @@ static ssize_t mode_store(struct device *dev, struct device_attribute *attr,
 	if (sysfs_streq(buf, "peripheral")) {
 		mdwc->vbus_active = true;
 		mdwc->id_state = DWC3_ID_FLOAT;
+		shutdown_from_sysfs = false;
 	} else if (sysfs_streq(buf, "host")) {
 		mdwc->vbus_active = false;
 		mdwc->id_state = DWC3_ID_GROUND;
 	} else {
 		mdwc->vbus_active = false;
 		mdwc->id_state = DWC3_ID_FLOAT;
+		shutdown_from_sysfs = true;
 	}
 
 	dwc3_ext_event_notify(mdwc);
@@ -3362,6 +3374,41 @@ static ssize_t xhci_link_compliance_store(struct device *dev,
 }
 
 static DEVICE_ATTR_RW(xhci_link_compliance);
+
+static int dwc3_msm_populate_gsi_params(struct dwc3_msm *mdwc)
+{
+	struct device_node *node = mdwc->dev->of_node;
+	struct device *dev = mdwc->dev;
+	struct property *prop = NULL;
+	const void *p_val;
+	void *value;
+	int size = 0;
+
+	p_val = of_get_property(node, "qcom,num-gsi-evt-buffs", &size);
+	if (!size) {
+		dev_dbg(dev, "GSI EP's not being used");
+		return 0;
+	}
+
+	of_property_read_u32(node, "qcom,num-gsi-evt-buffs",
+				&mdwc->num_gsi_event_buffers);
+
+	value = devm_kzalloc(dev, size, GFP_KERNEL);
+	if (!value)
+		return -ENOMEM;
+
+	memcpy(value, p_val, size);
+	prop = devm_kzalloc(dev, sizeof(*prop), GFP_KERNEL);
+	if (!prop)
+		return -ENOMEM;
+
+	prop->name = "num-gsi-eps";
+	prop->value = value;
+	prop->length = size;
+	mdwc->num_gsi_eps = prop;
+
+	return 0;
+}
 
 static int dwc3_msm_probe(struct platform_device *pdev)
 {
@@ -3587,6 +3634,13 @@ static int dwc3_msm_probe(struct platform_device *pdev)
 		}
 	}
 
+	shutdown_when_disconnected = of_property_read_bool(node,
+					"qcom,shutdown-enable");
+
+	ret = dwc3_msm_populate_gsi_params(mdwc);
+	if (ret)
+		goto err;
+
 	/* Assumes dwc3 is the first DT child of dwc3-msm */
 	dwc3_node = of_get_next_available_child(node, NULL);
 	if (!dwc3_node) {
@@ -3595,10 +3649,24 @@ static int dwc3_msm_probe(struct platform_device *pdev)
 		goto uninit_iommu;
 	}
 
+	if (mdwc->num_gsi_eps) {
+		mdwc->dwc3_node = dwc3_node;
+		ret = of_add_property(dwc3_node, mdwc->num_gsi_eps);
+		if (ret) {
+			dev_err(&pdev->dev,
+				"failed to add 'num-gsi-eps' prop: %d\n", ret);
+			of_node_put(dwc3_node);
+			goto uninit_iommu;
+		}
+	}
+
 	ret = of_platform_populate(node, NULL, NULL, &pdev->dev);
 	if (ret) {
 		dev_err(&pdev->dev,
 				"failed to add create dwc3 core\n");
+		if (mdwc->num_gsi_eps)
+			of_remove_property(dwc3_node, mdwc->num_gsi_eps);
+
 		of_node_put(dwc3_node);
 		goto uninit_iommu;
 	}
@@ -3643,8 +3711,6 @@ static int dwc3_msm_probe(struct platform_device *pdev)
 	if (cpu_to_affin)
 		register_cpu_notifier(&mdwc->dwc3_cpu_notifier);
 
-	ret = of_property_read_u32(node, "qcom,num-gsi-evt-buffs",
-				&mdwc->num_gsi_event_buffers);
 
 	/* IOMMU will be reattached upon each resume/connect */
 	if (mdwc->iommu_map)
@@ -3741,6 +3807,11 @@ put_dwc3:
 	platform_device_put(mdwc->dwc3);
 	if (mdwc->bus_perf_client)
 		msm_bus_scale_unregister_client(mdwc->bus_perf_client);
+	if (mdwc->num_gsi_eps) {
+		of_node_get(mdwc->dwc3_node);
+		of_remove_property(mdwc->dwc3_node, mdwc->num_gsi_eps);
+		of_node_put(mdwc->dwc3_node);
+	}
 
 uninit_iommu:
 	if (mdwc->iommu_map) {
@@ -3794,6 +3865,12 @@ static int dwc3_msm_remove(struct platform_device *pdev)
 		mdwc->hs_phy->flags &= ~PHY_HOST_MODE;
 	platform_device_put(mdwc->dwc3);
 	of_platform_depopulate(&pdev->dev);
+
+	if (mdwc->num_gsi_eps) {
+		of_node_get(mdwc->dwc3_node);
+		of_remove_property(mdwc->dwc3_node, mdwc->num_gsi_eps);
+		of_node_put(mdwc->dwc3_node);
+	}
 
 	pm_runtime_disable(mdwc->dev);
 	pm_runtime_barrier(mdwc->dev);
@@ -4399,9 +4476,14 @@ static void dwc3_otg_sm_work(struct work_struct *w)
 			dwc3_msm_gadget_vbus_draw(mdwc, 0);
 			dev_dbg(mdwc->dev, "Cable disconnected\n");
 #ifdef CONFIG_VXR200_XR_MISC
-			vxr7200_usb_event(false);
+			if (!shutdown_from_sysfs)
+				vxr7200_usb_event(false);
 #endif
-
+			if (shutdown_when_disconnected &&
+					 !shutdown_from_sysfs) {
+				pr_err("ARGlass: USB discontd, powering off\n");
+				orderly_poweroff(true);
+			}
 		}
 		break;
 

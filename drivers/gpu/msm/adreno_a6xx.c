@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2017-2018,2020, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2017-2018,2020-2021, The Linux Foundation. All rights reserved.
+>>>>>>> 49e29c0851609a9a9864a8c6111ca31c677b6767
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -288,6 +292,7 @@ static struct a6xx_protected_regs {
 	{ 0x8D0, 0x23, 0 },
 	{ 0x980, 0x4, 0 },
 	{ 0xA630, 0x0, 1 },
+	{ 0x1b400, 0x1fff, 1 },
 };
 
 /* IFPC & Preemption static powerup restore list */

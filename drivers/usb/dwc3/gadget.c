@@ -36,6 +36,10 @@
 #include "core.h"
 #include "gadget.h"
 #include "io.h"
+#ifdef CONFIG_VXR200_XR_MISC
+#include "../../misc/vxr7200.h"
+#endif
+
 
 static void dwc3_gadget_wakeup_interrupt(struct dwc3 *dwc, bool remote_wakeup);
 static int dwc3_gadget_wakeup_int(struct dwc3 *dwc);
@@ -2421,9 +2425,11 @@ static int dwc3_gadget_stop(struct usb_gadget *g)
 	dwc->gadget_driver = NULL;
 	spin_unlock_irqrestore(&dwc->lock, flags);
 
-	dbg_event(0xFF, "fwq_started", 0);
-	flush_workqueue(dwc->dwc_wq);
-	dbg_event(0xFF, "fwq_completed", 0);
+	if (!dwc->use_rt_thread) {
+		dbg_event(0xFF, "fwq_started", 0);
+		flush_workqueue(dwc->dwc_wq);
+		dbg_event(0xFF, "fwq_completed", 0);
+	}
 
 	return 0;
 }
@@ -2451,8 +2457,8 @@ static const struct usb_gadget_ops dwc3_gadget_ops = {
 
 /* -------------------------------------------------------------------------- */
 
-#define NUM_GSI_OUT_EPS	1
-#define NUM_GSI_IN_EPS	2
+#define NUM_GSI_OUT_EPS(dwc)	(dwc->num_gsi_eps / 2)
+#define NUM_GSI_IN_EPS(dwc)	((dwc->num_gsi_eps + 1) / 2)
 
 static int dwc3_gadget_init_hw_endpoints(struct dwc3 *dwc,
 		u8 num, u32 direction)
@@ -2460,13 +2466,7 @@ static int dwc3_gadget_init_hw_endpoints(struct dwc3 *dwc,
 	struct dwc3_ep			*dep;
 	u8				i, gsi_ep_count, gsi_ep_index = 0;
 
-	gsi_ep_count = NUM_GSI_OUT_EPS + NUM_GSI_IN_EPS;
-	/* OUT GSI EPs based on direction field */
-	if (gsi_ep_count && !direction)
-		gsi_ep_count = NUM_GSI_OUT_EPS;
-	/* IN GSI EPs */
-	else if (gsi_ep_count && direction)
-		gsi_ep_count = NUM_GSI_IN_EPS;
+	gsi_ep_count = direction ? NUM_GSI_IN_EPS(dwc) : NUM_GSI_OUT_EPS(dwc);
 
 	for (i = 0; i < num; i++) {
 		u8 epnum = (i << 1) | (direction ? 1 : 0);
@@ -3550,6 +3550,9 @@ static void dwc3_gadget_interrupt(struct dwc3 *dwc,
 	case DWC3_DEVICE_EVENT_DISCONNECT:
 		dwc3_gadget_disconnect_interrupt(dwc);
 		dwc->dbg_gadget_events.disconnect++;
+#ifdef CONFIG_VXR200_XR_MISC
+		vxr7200_usb_event(false);
+#endif
 		break;
 	case DWC3_DEVICE_EVENT_RESET:
 		dwc3_gadget_reset_interrupt(dwc);
@@ -3558,6 +3561,9 @@ static void dwc3_gadget_interrupt(struct dwc3 *dwc,
 	case DWC3_DEVICE_EVENT_CONNECT_DONE:
 		dwc3_gadget_conndone_interrupt(dwc);
 		dwc->dbg_gadget_events.connect++;
+#ifdef CONFIG_VXR200_XR_MISC
+		vxr7200_usb_event(true);
+#endif
 		break;
 	case DWC3_DEVICE_EVENT_WAKEUP:
 		dwc3_gadget_wakeup_interrupt(dwc, false);
@@ -3814,8 +3820,12 @@ irqreturn_t dwc3_interrupt(int irq, void *_dwc)
 	dwc->irq_event_count[dwc->irq_dbg_index] = temp_cnt / 4;
 	dwc->irq_dbg_index = (dwc->irq_dbg_index + 1) % MAX_INTR_STATS;
 
-	if (ret == IRQ_WAKE_THREAD)
-		queue_work(dwc->dwc_wq, &dwc->bh_work);
+	if (ret == IRQ_WAKE_THREAD) {
+		if (dwc->use_rt_thread)
+			dwc3_thread_interrupt(dwc->irq, dwc);
+		else
+			queue_work(dwc->dwc_wq, &dwc->bh_work);
+	}
 
 	return IRQ_HANDLED;
 }

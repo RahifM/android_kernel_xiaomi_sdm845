@@ -23,6 +23,7 @@
 #include <linux/usb/video.h>
 #include <linux/vmalloc.h>
 #include <linux/wait.h>
+#include <linux/delay.h>
 
 #include <media/v4l2-dev.h>
 #include <media/v4l2-event.h>
@@ -405,32 +406,70 @@ uvc_function_disconnect(struct uvc_device *uvc)
 {
 	struct usb_composite_dev *cdev = uvc->func.config->cdev;
 	int ret;
+	int timeout = 20;
 
-	if ((ret = usb_function_deactivate(&uvc->func)) < 0)
+retry:
+	ret = usb_function_deactivate(&uvc->func);
+	if (ret < 0) {
 		INFO(cdev, "UVC disconnect failed with %d\n", ret);
+		if (--timeout && ret == -ETIMEDOUT) {
+			if (timeout < 10)
+				msleep(50);
+			goto retry;
+		}
+	}
 }
 
 /* --------------------------------------------------------------------------
  * USB probe and disconnect
  */
 
+static ssize_t function_name_show(struct device *dev,
+				  struct device_attribute *attr, char *buf)
+{
+	struct uvc_device *uvc = dev_get_drvdata(dev);
+
+	return sprintf(buf, "%s\n", uvc->func.fi->group.cg_item.ci_name);
+}
+
+static DEVICE_ATTR_RO(function_name);
+
+static void uvc_video_device_release(struct video_device *vdev)
+{
+	struct uvc_device *uvc = container_of(vdev, struct uvc_device, vdev);
+
+	memset(vdev, 0, sizeof(*vdev));
+	complete(&uvc->unbind_ok);
+}
+
 static int
 uvc_register_video(struct uvc_device *uvc)
 {
 	struct usb_composite_dev *cdev = uvc->func.config->cdev;
+	int ret;
 
 	/* TODO reference counting. */
 	uvc->vdev.v4l2_dev = &uvc->v4l2_dev;
 	uvc->vdev.fops = &uvc_v4l2_fops;
 	uvc->vdev.ioctl_ops = &uvc_v4l2_ioctl_ops;
-	uvc->vdev.release = video_device_release_empty;
+	uvc->vdev.release = uvc_video_device_release;
 	uvc->vdev.vfl_dir = VFL_DIR_TX;
 	uvc->vdev.lock = &uvc->video.mutex;
 	strlcpy(uvc->vdev.name, cdev->gadget->name, sizeof(uvc->vdev.name));
 
 	video_set_drvdata(&uvc->vdev, uvc);
 
-	return video_register_device(&uvc->vdev, VFL_TYPE_GRABBER, -1);
+	ret = video_register_device(&uvc->vdev, VFL_TYPE_GRABBER, -1);
+	if (ret < 0)
+		return ret;
+
+	ret = device_create_file(&uvc->vdev.dev, &dev_attr_function_name);
+	if (ret < 0) {
+		video_unregister_device(&uvc->vdev);
+		return ret;
+	}
+
+	return 0;
 }
 
 #define UVC_COPY_DESCRIPTOR(mem, dst, desc) \
@@ -679,12 +718,14 @@ uvc_function_bind(struct usb_configuration *c, struct usb_function *f)
 	uvc_iad.bFirstInterface = ret;
 	uvc_control_intf.bInterfaceNumber = ret;
 	uvc->control_intf = ret;
+	opts->control_interface = ret;
 
 	if ((ret = usb_interface_id(c, f)) < 0)
 		goto error;
 	uvc_streaming_intf_alt0.bInterfaceNumber = ret;
 	uvc_streaming_intf_alt1.bInterfaceNumber = ret;
 	uvc->streaming_intf = ret;
+	opts->streaming_interface = ret;
 
 	/* Copy descriptors */
 	f->fs_descriptors = uvc_copy_descriptors(uvc, USB_SPEED_FULL);
@@ -739,6 +780,8 @@ uvc_function_bind(struct usb_configuration *c, struct usb_function *f)
 		goto error;
 	}
 
+	reinit_completion(&uvc->unbind_ok);
+	uvc->wait_for_close = false;
 	return 0;
 
 error:
@@ -772,6 +815,7 @@ static struct usb_function_instance *uvc_alloc_inst(void)
 	struct uvc_output_terminal_descriptor *od;
 	struct uvc_color_matching_descriptor *md;
 	struct uvc_descriptor_header **ctl_cls;
+	int ret;
 
 	opts = kzalloc(sizeof(*opts), GFP_KERNEL);
 	if (!opts)
@@ -850,7 +894,12 @@ static struct usb_function_instance *uvc_alloc_inst(void)
 	opts->streaming_interval = 1;
 	opts->streaming_maxpacket = 1024;
 
-	uvcg_attach_configfs(opts);
+	ret = uvcg_attach_configfs(opts);
+	if (ret < 0) {
+		kfree(opts);
+		return ERR_PTR(ret);
+	}
+
 	return &opts->func_inst;
 }
 
@@ -867,11 +916,20 @@ static void uvc_unbind(struct usb_configuration *c, struct usb_function *f)
 {
 	struct usb_composite_dev *cdev = c->cdev;
 	struct uvc_device *uvc = to_uvc(f);
+	struct v4l2_event v4l2_event;
 
 	INFO(cdev, "%s\n", __func__);
 
+	memset(&v4l2_event, 0, sizeof(v4l2_event));
+	v4l2_event.type = UVC_EVENT_UNBIND;
+	v4l2_event_queue(&uvc->vdev, &v4l2_event);
+
+	device_remove_file(&uvc->vdev.dev, &dev_attr_function_name);
 	video_unregister_device(&uvc->vdev);
 	v4l2_device_unregister(&uvc->v4l2_dev);
+
+	if (uvc->wait_for_close)
+		wait_for_completion(&uvc->unbind_ok);
 
 	usb_ep_free_request(cdev->gadget->ep0, uvc->control_req);
 	kfree(uvc->control_buf);
@@ -889,6 +947,7 @@ static struct usb_function *uvc_alloc(struct usb_function_instance *fi)
 	if (uvc == NULL)
 		return ERR_PTR(-ENOMEM);
 
+	init_completion(&uvc->unbind_ok);
 	mutex_init(&uvc->video.mutex);
 	uvc->state = UVC_STATE_DISCONNECTED;
 	opts = fi_to_f_uvc_opts(fi);
