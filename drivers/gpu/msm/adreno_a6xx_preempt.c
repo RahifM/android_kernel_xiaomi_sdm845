@@ -1,8 +1,5 @@
 /* Copyright (c) 2017-2018,2020, The Linux Foundation. All rights reserved.
-<<<<<<< HEAD
-=======
  * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
->>>>>>> 49e29c0851609a9a9864a8c6111ca31c677b6767
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -548,12 +545,7 @@ unsigned int a6xx_preemption_pre_ibsubmit(
 	if (context) {
 		struct adreno_context *drawctxt = ADRENO_CONTEXT(context);
 		struct adreno_ringbuffer *rb = drawctxt->rb;
-<<<<<<< HEAD
-		uint64_t dest = adreno_dev->preempt.scratch.gpuaddr +
-			sizeof(u64) * rb->id;
-=======
 		uint64_t dest = PREEMPT_SCRATCH_ADDR(adreno_dev, rb->id);
->>>>>>> 49e29c0851609a9a9864a8c6111ca31c677b6767
 
 		*cmds++ = cp_mem_packet(adreno_dev, CP_MEM_WRITE, 2, 2);
 		cmds += cp_gpuaddr(adreno_dev, cmds, dest);
@@ -586,12 +578,7 @@ unsigned int a6xx_preemption_post_ibsubmit(struct adreno_device *adreno_dev,
 	struct adreno_ringbuffer *rb = adreno_dev->cur_rb;
 
 	if (rb) {
-<<<<<<< HEAD
-		uint64_t dest = adreno_dev->preempt.scratch.gpuaddr +
-			sizeof(u64) * rb->id;
-=======
 		uint64_t dest = PREEMPT_SCRATCH_ADDR(adreno_dev, rb->id);
->>>>>>> 49e29c0851609a9a9864a8c6111ca31c677b6767
 
 		*cmds++ = cp_mem_packet(adreno_dev, CP_MEM_WRITE, 2, 2);
 		cmds += cp_gpuaddr(adreno_dev, cmds, dest);
