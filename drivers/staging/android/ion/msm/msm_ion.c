@@ -816,10 +816,7 @@ long msm_ion_custom_ioctl(struct ion_client *client,
 
 		lock_client(client);
 		if (data.flush_data.handle > 0) {
-<<<<<<< HEAD
-=======
 			mutex_lock(&client->lock);
->>>>>>> ec47c75ed82644c93b62a40ca4044174860a659a
 			handle = ion_handle_get_by_id_nolock(
 					client, (int)data.flush_data.handle);
 			if (IS_ERR(handle)) {
