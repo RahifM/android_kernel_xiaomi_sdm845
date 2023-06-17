@@ -3,7 +3,7 @@ on:
   push: 
 
 jobs:
-  test:
+  build_kermel:
     runs-on: ubuntu-latest
     env:
       BOT_API_KEY: ${{ secrets.BOT_API_KEY }}
@@ -11,12 +11,14 @@ jobs:
       GITHUB_REPO: ${{ github.repository }}
       GITHUB_REFNAME: ${{ github.ref_name }}
     steps:
-      - name: Cache build
-        id: cache-build
+      - name: update cache on every commit
         uses: actions/cache@v3
         with:
-          path: beryllium
-          key: ${{ runner.os }}-beryllium
+          path: |
+            beryllium
+          key: beryllium-${{ github.ref_name }}-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            beryllium-${{ github.ref_name }}-${{ runner.os }}
       - name: Build kermel
         run: |
              export TZ='Asia/Kolkata' && date
