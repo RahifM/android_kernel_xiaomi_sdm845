@@ -2955,14 +2955,10 @@ void f2fs_wait_on_block_writeback(struct inode *inode, block_t blkaddr)
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 	struct page *cpage;
 
-<<<<<<< HEAD
 	if (!f2fs_post_read_required(inode))
 		return;
 
-	if (blkaddr == NEW_ADDR || blkaddr == NULL_ADDR)
-=======
 	if (!is_valid_data_blkaddr(sbi, blkaddr))
->>>>>>> ec47c75ed82644c93b62a40ca4044174860a659a
 		return;
 
 	cpage = find_lock_page(META_MAPPING(sbi), blkaddr);
