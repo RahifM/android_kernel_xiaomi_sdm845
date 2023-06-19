@@ -3264,6 +3264,8 @@ void scheduler_tick(void)
 	if (early_notif)
 		flag = SCHED_CPUFREQ_WALT | SCHED_CPUFREQ_EARLY_DET;
 
+	cpufreq_update_util(rq, flag);
+
 	psi_task_tick(rq);
 
 	raw_spin_unlock(&rq->lock);
