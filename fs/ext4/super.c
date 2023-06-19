@@ -2133,13 +2133,8 @@ int ext4_alloc_flex_bg_array(struct super_block *sb, ext4_group_t ngroup)
 	if (size <= sbi->s_flex_groups_allocated)
 		return 0;
 
-<<<<<<< HEAD
-	size = roundup_pow_of_two(size * sizeof(struct flex_groups));
-	new_groups = kvzalloc(size, GFP_KERNEL);
-=======
-	new_groups = ext4_kvzalloc(roundup_pow_of_two(size *
+	new_groups = kvzalloc(roundup_pow_of_two(size *
 				   sizeof(*sbi->s_flex_groups)), GFP_KERNEL);
->>>>>>> 277bc96a920a (ext4: fix potential race between s_flex_groups online resizing and access)
 	if (!new_groups) {
 		ext4_msg(sb, KERN_ERR,
 			 "not enough memory for %d flex group pointers", size);
