@@ -2145,11 +2145,8 @@ static struct binder_thread *binder_get_txn_from_and_acq_inner(
 
 static void binder_free_transaction(struct binder_transaction *t)
 {
-<<<<<<< HEAD
 	if (t->buffer)
 		t->buffer->transaction = NULL;
-	kmem_cache_free(binder_transaction_pool, t);
-=======
 	struct binder_proc *target_proc;
 
 	spin_lock(&t->lock);
@@ -2170,8 +2167,7 @@ static void binder_free_transaction(struct binder_transaction *t)
 		 */
 		spin_unlock(&t->lock);
 	}
-	kfree(t);
->>>>>>> 73a83072185d (binder: binder: fix possible UAF when freeing buffer)
+	kmem_cache_free(binder_transaction_pool, t);
 	binder_stats_deleted(BINDER_STAT_TRANSACTION);
 }
 
