@@ -25,6 +25,6 @@ jobs:
              #rm -rf beryllium
              cd beryllium && git fetch origin && git checkout origin/$GITHUB_REFNAME && git branch -D $GITHUB_REFNAME && git checkout -b $GITHUB_REFNAME && git branch || { git clone https://github.com/$GITHUB_REPO -b $GITHUB_REFNAME beryllium && cd beryllium && git branch ;}
              ls
-             #make clean && make mrproper
+             make clean && make mrproper
              bash rm.sh
              bash build_kernel.sh
