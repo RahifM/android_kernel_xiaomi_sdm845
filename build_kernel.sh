@@ -51,7 +51,7 @@ if [ "$(grep Image.gz $LOG | cut -d / -f 4)" == "" ] ; then
 	exit 1
 fi
 
-VERSION="$(cat version)-$(date +'%Y%m%d-%H%M')"
+VERSION="$(cat version)-g$(git rev-parse --verify --short=8 HEAD 2>/dev/null)-$(date +'%Y%m%d-%H%M')"
 
 rm arter97-beryllium-$VERSION.zip 2>/dev/null
 
