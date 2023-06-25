@@ -78,7 +78,7 @@ cp arter97-beryllium-$VERSION.zip ../arter97-beryllium-$VERSION.zip
 cd ..
 
 # Upload package
-$TG -f arter97-beryllium-$VERSION.zip "$(cat $KERNELDIR/include/generated/uts* | cut -d '"' -f 2)"$'\n'$'\n'"HEAD: $(git log -n 1 --oneline)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/comp*h | grep LINUX_COMPILER | cut -d '"' -f 2)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/comp*h | grep UTS_VERSION | cut -d '"' -f 2)"
+$TG -f arter97-beryllium-$VERSION.zip "$(ls arter97-bery*)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/uts* | cut -d '"' -f 2)"$'\n'$'\n'"HEAD: $(git log -n 1 --oneline)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/comp*h | grep LINUX_COMPILER | cut -d '"' -f 2)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/comp*h | grep UTS_VERSION | cut -d '"' -f 2)"
 mv $LOG bl-$(ls arter*zip | rev | cut -d / -f 1 | rev | cut -d . -f 2 | cut -d - -f 2-).txt
 $TG -f $LOG
 # Grep warnings if any
