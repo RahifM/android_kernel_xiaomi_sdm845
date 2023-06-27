@@ -55,6 +55,9 @@ if [ "$(grep Image.gz $LOG | cut -d / -f 4)" == "" ] ; then
 	exit 1
 fi
 
+$TG -f $LOG "Kernel compilation success."
+
+pack() {
 VERSION="$(cat version)-g$(git rev-parse --verify --short=8 HEAD 2>/dev/null)-$(date +'%Y%m%d-%H%M')"
 
 rm arter97-beryllium-$VERSION.zip 2>/dev/null
@@ -80,7 +83,9 @@ cd kernelzip/
 7z a -mx0 arter97-beryllium-$VERSION.zip *
 cp arter97-beryllium-$VERSION.zip ../arter97-beryllium-$VERSION.zip
 cd ..
+}
 
+up() {
 # Upload package
 duration=$SECONDS
 echo "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
@@ -95,3 +100,6 @@ if [ "$(cat $LOG2)" == "" ]; then
 else
 	$TG -f $LOG2
 fi
+}
+
+#pack && up
