@@ -43,6 +43,7 @@
 #include <linux/nls.h>
 #include <linux/of.h>
 #include <linux/blkdev.h>
+#include <linux/hwinfo.h>
 #include "ufshcd.h"
 #include "ufshci.h"
 #include "ufs_quirks.h"
@@ -7962,9 +7963,16 @@ static int ufs_read_device_desc_data(struct ufs_hba *hba)
 		desc_buf[DEVICE_DESC_PARAM_SPEC_VER] << 8 |
 		desc_buf[DEVICE_DESC_PARAM_SPEC_VER + 1];
 
+<<<<<<< HEAD
 out:
 	kfree(desc_buf);
 	return err;
+=======
+	update_hardware_info(TYPE_EMMC, hba->dev_info.w_manufacturer_id);
+	dev_info(hba->dev, "UFS manufacturer id: 0x%04X\n", hba->dev_info.w_manufacturer_id);
+
+	return 0;
+>>>>>>> e266627b5617 (Import drivers from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
 }
 
 static void ufshcd_init_desc_sizes(struct ufs_hba *hba)
