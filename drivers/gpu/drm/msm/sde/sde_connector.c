@@ -91,12 +91,9 @@ static int sde_backlight_device_update_status(struct backlight_device *bd)
 	if (!bl_lvl && brightness)
 		bl_lvl = 1;
 
-<<<<<<< HEAD
-=======
 	if (bl_lvl && bl_lvl < display->panel->bl_config.bl_min_level)
 		bl_lvl = display->panel->bl_config.bl_min_level;
 
->>>>>>> 24ceabd83569 (Import drivers/gpu from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
 	if (display->panel->bl_config.bl_update ==
 		BL_UPDATE_DELAY_UNTIL_FIRST_FRAME && !c_conn->allow_bl_update) {
 		c_conn->unset_bl_level = bl_lvl;
@@ -699,20 +696,13 @@ void sde_connector_helper_bridge_enable(struct drm_connector *connector)
 				MSM_ENC_TX_COMPLETE);
 	c_conn->allow_bl_update = true;
 
-<<<<<<< HEAD
-	if (c_conn->bl_device) {
-=======
 	if (!display->is_first_boot && c_conn->bl_device) {
->>>>>>> 24ceabd83569 (Import drivers/gpu from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
 		c_conn->bl_device->props.power = FB_BLANK_UNBLANK;
 		c_conn->bl_device->props.state &= ~BL_CORE_FBBLANK;
 		backlight_update_status(c_conn->bl_device);
 	}
 	c_conn->panel_dead = false;
-<<<<<<< HEAD
-=======
 	display->is_first_boot = false;
->>>>>>> 24ceabd83569 (Import drivers/gpu from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
 }
 
 int sde_connector_clk_ctrl(struct drm_connector *connector, bool enable)

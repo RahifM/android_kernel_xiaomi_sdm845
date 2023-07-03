@@ -239,9 +239,8 @@ struct dsi_panel {
 
 	bool sync_broadcast_en;
 
-<<<<<<< HEAD
 	struct dsi_panel_exd_config exd_config;
-=======
+
 	u32 panel_on_dimming_delay;
 	u32 last_bl_lvl;
 	struct delayed_work cmds_work;
@@ -266,7 +265,6 @@ struct dsi_panel {
 	bool in_aod;
 	u32 doze_backlight_threshold;
 	ktime_t fod_hbm_off_time;
->>>>>>> 24ceabd83569 (Import drivers/gpu from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
 };
 
 static inline bool dsi_panel_ulps_feature_enabled(struct dsi_panel *panel)

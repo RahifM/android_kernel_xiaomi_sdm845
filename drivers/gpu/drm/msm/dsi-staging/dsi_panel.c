@@ -767,9 +767,8 @@ static int dsi_panel_power_off(struct dsi_panel *panel)
 {
 	int rc = 0;
 
-<<<<<<< HEAD
 	dsi_panel_exd_disable(panel);
-=======
+
 	if (g_panel->panel_reset_skip) {
 			pr_info("%s: panel reset skip\n", __func__);
 			return rc;
@@ -779,7 +778,6 @@ static int dsi_panel_power_off(struct dsi_panel *panel)
 		if (gpio_is_valid(panel->reset_config.reset_gpio))
 			gpio_set_value(panel->reset_config.reset_gpio, 0);
 	}
->>>>>>> 24ceabd83569 (Import drivers/gpu from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
 
 	if (gpio_is_valid(panel->reset_config.disp_en_gpio))
 		gpio_set_value(panel->reset_config.disp_en_gpio, 0);
@@ -2754,12 +2752,9 @@ static int dsi_panel_parse_bl_config(struct dsi_panel *panel,
 		panel->bl_config.type = DSI_BACKLIGHT_UNKNOWN;
 	}
 
-<<<<<<< HEAD
-=======
 	panel->bl_config.dcs_type_ss = of_property_read_bool(of_node,
 						"qcom,mdss-dsi-bl-dcs-type-ss");
 
->>>>>>> 24ceabd83569 (Import drivers/gpu from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
 	data = of_get_property(of_node, "qcom,bl-update-flag", NULL);
 	if (!data) {
 		panel->bl_config.bl_update = BL_UPDATE_NONE;
