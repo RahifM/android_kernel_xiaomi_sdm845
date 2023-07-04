@@ -2185,45 +2185,6 @@ static int fg_adjust_recharge_soc(struct fg_chip *chip)
 	 * the recharge SOC threshold based on the monotonic SOC at which
 	 * the charge termination had happened.
 	 */
-<<<<<<< HEAD
-	if (is_input_present(chip)) {
-		if (chip->charge_done) {
-			if (!chip->recharge_soc_adjusted) {
-				/* Get raw monotonic SOC for calculation */
-				rc = fg_get_msoc(chip, &msoc);
-				if (rc < 0) {
-					pr_err("Error in getting msoc, rc=%d\n",
-						rc);
-					return rc;
-				}
-
-				/* Adjust the recharge_soc threshold */
-				new_recharge_soc = msoc - (FULL_CAPACITY -
-								recharge_soc);
-				chip->recharge_soc_adjusted = true;
-			} else {
-				/* adjusted already, do nothing */
-				if (chip->health != POWER_SUPPLY_HEALTH_GOOD)
-					return 0;
-
-				/*
-				 * Device is out of JEITA so restore the
-				 * default value
-				 */
-				new_recharge_soc = recharge_soc;
-				chip->recharge_soc_adjusted = false;
-			}
-		} else {
-			if (!chip->recharge_soc_adjusted)
-				return 0;
-
-			if (chip->health != POWER_SUPPLY_HEALTH_GOOD)
-				return 0;
-
-			/* Restore the default value */
-			new_recharge_soc = recharge_soc;
-			chip->recharge_soc_adjusted = false;
-=======
 	if (is_input_present(chip) && !chip->recharge_soc_adjusted
 			&& chip->charge_done) {
 		if (chip->health == POWER_SUPPLY_HEALTH_GOOD)
@@ -2233,7 +2194,6 @@ static int fg_adjust_recharge_soc(struct fg_chip *chip)
 		if (rc < 0) {
 			pr_err("Error in getting msoc, rc=%d\n", rc);
 			return rc;
->>>>>>> 9b082522e857 (Import drivers/power from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
 		}
 
 		/* Adjust the recharge_soc threshold */
@@ -2843,17 +2803,11 @@ out:
 
 static int fg_get_cycle_count(struct fg_chip *chip)
 {
-<<<<<<< HEAD
 	int i, len = 0;
-=======
-	int count = 0;
-	int i = 0;
->>>>>>> 9b082522e857 (Import drivers/power from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
 
 	if (!chip->cyc_ctr.en)
 		return 0;
 
-<<<<<<< HEAD
 	mutex_lock(&chip->cyc_ctr.lock);
 	for (i = 0; i < BUCKET_COUNT; i++)
 		len += chip->cyc_ctr.count[i];
@@ -2863,17 +2817,6 @@ static int fg_get_cycle_count(struct fg_chip *chip)
 	len = len / BUCKET_COUNT;
 
 	return len;
-=======
-	if ((chip->cyc_ctr.id <= 0) || (chip->cyc_ctr.id > BUCKET_COUNT))
-		return -EINVAL;
-
-	mutex_lock(&chip->cyc_ctr.lock);
-	for (i = 0; i < BUCKET_COUNT; i++)
-		count += chip->cyc_ctr.count[i];
-	count /= BUCKET_COUNT;
-	mutex_unlock(&chip->cyc_ctr.lock);
-	return count;
->>>>>>> 9b082522e857 (Import drivers/power from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
 }
 
 static const char *fg_get_cycle_counts(struct fg_chip *chip)
@@ -2901,7 +2844,28 @@ static const char *fg_get_cycle_counts(struct fg_chip *chip)
 	return buf;
 }
 
-<<<<<<< HEAD
+static int fg_set_cycle_count(struct fg_chip *chip, int value)
+{
+	int rc = 0;
+	int i = 0;
+	u8 data[2];
+
+	for(i = 0; i < BUCKET_COUNT; i++) {
+		data[0] = value & 0xFF;
+		data[1] = value >> 8;
+
+		rc = fg_sram_write(chip, CYCLE_COUNT_WORD + (i / 2),
+				CYCLE_COUNT_OFFSET + (i % 2) * 2, data, 2,
+				FG_IMA_DEFAULT);
+		if (rc < 0)
+			pr_err("failed to write BATT_CYCLE[%d] rc=%d\n",
+				i, rc);
+		else
+			chip->cyc_ctr.count[i] = value;
+	}
+	return rc;
+}
+
 #define ESR_SW_FCC_UA				100000	/* 100mA */
 #define ESR_EXTRACTION_ENABLE_MASK		BIT(0)
 static void fg_esr_sw_work(struct work_struct *work)
@@ -3036,28 +3000,6 @@ static int fg_config_esr_sw(struct fg_chip *chip)
 	}
 
 	return 0;
-=======
-static int fg_set_cycle_count(struct fg_chip *chip, int value)
-{
-	int rc = 0;
-	int i = 0;
-	u8 data[2];
-
-	for(i = 0; i < BUCKET_COUNT; i++) {
-		data[0] = value & 0xFF;
-		data[1] = value >> 8;
-
-		rc = fg_sram_write(chip, CYCLE_COUNT_WORD + (i / 2),
-				CYCLE_COUNT_OFFSET + (i % 2) * 2, data, 2,
-				FG_IMA_DEFAULT);
-		if (rc < 0)
-			pr_err("failed to write BATT_CYCLE[%d] rc=%d\n",
-				i, rc);
-		else
-			chip->cyc_ctr.count[i] = value;
-	}
-	return rc;
->>>>>>> 9b082522e857 (Import drivers/power from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
 }
 
 static void status_change_work(struct work_struct *work)
@@ -6435,12 +6377,8 @@ static int fg_gen3_remove(struct platform_device *pdev)
 static void fg_gen3_shutdown(struct platform_device *pdev)
 {
 	struct fg_chip *chip = dev_get_drvdata(&pdev->dev);
-<<<<<<< HEAD
-	int rc, bsoc;
-	u8 mask;
-=======
 	int rc, bsoc, msoc;
->>>>>>> 9b082522e857 (Import drivers/power from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
+	u8 mask;
 
 	rc = fg_get_prop_capacity(chip, &msoc);
 	if (rc < 0) {

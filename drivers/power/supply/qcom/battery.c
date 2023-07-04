@@ -1188,16 +1188,6 @@ static int pl_disable_vote_callback(struct votable *votable,
 						msecs_to_jiffies(5000));
 	}
 
-<<<<<<< HEAD
-	/* notify parallel state change */
-	if (chip->pl_psy && (chip->pl_disable != pl_disable)
-				&& !chip->fcc_stepper_enable) {
-		power_supply_changed(chip->pl_psy);
-		chip->pl_disable = (bool)pl_disable;
-	}
-
-=======
->>>>>>> 9b082522e857 (Import drivers/power from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
 	pl_dbg(chip, PR_PARALLEL, "parallel charging %s\n",
 		   pl_disable ? "disabled" : "enabled");
 

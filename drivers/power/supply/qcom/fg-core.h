@@ -524,12 +524,9 @@ struct fg_chip {
 	bool			esr_flt_cold_temp_en;
 	bool			slope_limit_en;
 	bool			use_ima_single_mode;
-<<<<<<< HEAD
 	bool			usb_present;
 	bool			twm_state;
-=======
 	bool			report_full;
->>>>>>> 9b082522e857 (Import drivers/power from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
 	bool			use_dma;
 	bool			qnovo_enable;
 	bool			empty_restart_fg;

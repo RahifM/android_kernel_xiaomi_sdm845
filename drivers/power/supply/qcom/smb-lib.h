@@ -80,13 +80,10 @@ enum print_reason {
 #define MOISTURE_VOTER			"MOISTURE_VOTER"
 #define HVDCP2_ICL_VOTER		"HVDCP2_ICL_VOTER"
 #define OV_VOTER			"OV_VOTER"
-<<<<<<< HEAD
 #define FG_ESR_VOTER			"FG_ESR_VOTER"
 #define FCC_STEPPER_VOTER		"FCC_STEPPER_VOTER"
-=======
 #define DCIN_USER_VOTER                "DCIN_USER_VOTER"
 #define UNSTANDARD_QC2_VOTER			"UNSTANDARD_QC2_VOTER"
->>>>>>> 9b082522e857 (Import drivers/power from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
 
 #define VCONN_MAX_ATTEMPTS	3
 #define OTG_MAX_ATTEMPTS	3
@@ -644,12 +641,9 @@ void smblib_usb_typec_change(struct smb_charger *chg);
 int smblib_set_prop_rerun_apsd(struct smb_charger *chg,
 				const union power_supply_propval *val);
 int smblib_toggle_stat(struct smb_charger *chg, int reset);
-<<<<<<< HEAD
 int smblib_force_ufp(struct smb_charger *chg);
-=======
 int smblib_set_prop_wireless_wakelock(struct smb_charger *chg,
 				const union power_supply_propval *val);
->>>>>>> 9b082522e857 (Import drivers/power from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
 
 int smblib_init(struct smb_charger *chg);
 int smblib_deinit(struct smb_charger *chg);
