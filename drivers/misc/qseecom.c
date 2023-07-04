@@ -417,7 +417,7 @@ static int get_qseecom_keymaster_status(char *str)
 }
 __setup("androidboot.keymaster=", get_qseecom_keymaster_status);
 
-<<<<<<< HEAD
+extern void read_qseelog_wakeup(void);
 
 #define QSEECOM_SCM_EBUSY_WAIT_MS 30
 #define QSEECOM_SCM_EBUSY_MAX_RETRY 67
@@ -440,9 +440,6 @@ static int __qseecom_scm_call2_locked(uint32_t smc_id, struct scm_desc *desc)
 			(retry_count++ < QSEECOM_SCM_EBUSY_MAX_RETRY));
 	return ret;
 }
-=======
-extern void read_qseelog_wakeup(void);
->>>>>>> 305b7e09074e (Import drivers/misc from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
 
 static int qseecom_scm_call2(uint32_t svc_id, uint32_t tz_cmd_id,
 			const void *req_buf, void *resp_buf)
