@@ -1330,7 +1330,6 @@ config TOUCHSCREEN_HIMAX_CHIPSET
 
 source "drivers/input/touchscreen/hxchipset/Kconfig"
 
-<<<<<<< HEAD
 config TOUCHSCREEN_EKTF3XXX_CHIPSET
 	bool "Elan EKTF3XXX touchpanel CHIPSET"
 	depends on I2C
@@ -1340,12 +1339,11 @@ config TOUCHSCREEN_EKTF3XXX_CHIPSET
 	  report 10 touches at a time.
 
 		  If unusre, say N.
-=======
+
 config TOUCHSCREEN_PALM_SENSOR
 	bool "palm sensor"
 	depends on I2C
 	help
 	  Say Y here if you have a palm sensor.
->>>>>>> c34550e44ef1 (Import drivers/input/touchscreen from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
 
 endif

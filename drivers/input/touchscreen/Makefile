@@ -111,9 +111,6 @@ obj-$(CONFIG_TOUCHSCREEN_FT5X46)  += ft5x46/
 obj-$(CONFIG_TOUCHSCREEN_FTS)		+= focaltech_touch/
 obj-$(CONFIG_TOUCHSCREEN_GT9XX_v28)		+= gt9xx_v2.8/
 obj-$(CONFIG_TOUCHSCREEN_HIMAX_CHIPSET)	+= hxchipset/
-<<<<<<< HEAD
 obj-$(CONFIG_TOUCHSCREEN_EKTF3XXX_CHIPSET) += ektf3xxx/
-=======
 obj-$(CONFIG_TOUCHSCREEN_PALM_SENSOR)  += palm_sensor.o
 
->>>>>>> c34550e44ef1 (Import drivers/input/touchscreen from https://github.com/RahifM/android_kernel_xiaomi_sdm845/commit/7680936256f672eff41fbe7dc2eaa3537a73127a)
