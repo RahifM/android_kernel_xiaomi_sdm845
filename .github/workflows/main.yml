@@ -11,7 +11,8 @@ jobs:
       GITHUB_REPO: ${{ github.repository }}
       GITHUB_REFNAME: ${{ github.ref_name }}
     steps:
-      - name: update cache on every commit
+      - name: Cache
+        id: cache
         uses: actions/cache@v3
         with:
           path: |
@@ -19,12 +20,19 @@ jobs:
           key: beryllium-${{ github.ref_name }}-${{ runner.os }}-${{ github.run_id }}
           restore-keys: |
             beryllium-${{ github.ref_name }}-${{ runner.os }}
-      - name: Build kermel
+      - name: Clone
+        if: steps.cache.outputs.cache-hit != 'false'
         run: |
-             export TZ='Asia/Kolkata' && date
-             #rm -rf beryllium
-             cd beryllium && git fetch origin && git checkout origin/$GITHUB_REFNAME && git branch -D $GITHUB_REFNAME && git checkout -b $GITHUB_REFNAME && git branch || { git clone https://github.com/$GITHUB_REPO -b $GITHUB_REFNAME beryllium && cd beryllium && git branch ;}
-             ls
-             #make clean && make mrproper
-             bash rm.sh
-             bash build_kernel.sh
+          git clone https://github.com/$GITHUB_REPO -b $GITHUB_REFNAME beryllium && cd beryllium && git branch && git reset --hard
+      - name: Update
+        if: steps.cache.outputs.cache-hit == 'false'
+        run: |
+          cd beryllium && git fetch origin $GITHUB_REFNAME && git checkout origin/$GITHUB_REFNAME && git branch -D $GITHUB_REFNAME && git checkout -b $GITHUB_REFNAME && git branch && git reset --hard
+      - name: Build
+        run: |
+          export TZ='Asia/Kolkata' && date
+          #rm -rf beryllium
+          cd beryllium && ls
+          #make clean && make mrproper
+          bash rm.sh
+          bash build_kernel.sh
