@@ -40,7 +40,6 @@ jobs:
           ccache -d ../ccberyllium -vs
           #ccache -d ../ccberyllium -cC
           #ccache -d ../ccberyllium -vs
-          bash rm.sh
           bash build_kernel.sh
           ccache -d ../ccberyllium -vs
           time { make clean && make mrproper ;}
