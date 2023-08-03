@@ -17,6 +17,7 @@ jobs:
         with:
           path: |
             beryllium
+            ccberyllium
           key: beryllium-${{ github.ref_name }}-${{ runner.os }}-${{ github.run_id }}
           restore-keys: |
             beryllium-${{ github.ref_name }}-${{ runner.os }}
@@ -31,12 +32,16 @@ jobs:
       - name: Add pkgs
         run: |
           sudo apt-get update
-          sudo apt-get install pigz -y
+          sudo apt-get install ccache pigz -y
       - name: Build
         run: |
           export TZ='Asia/Kolkata' && date
           cd beryllium && ls && git status
+          ccache -d ../ccberyllium -vs
+          #ccache -d ../ccberyllium -cC
+          #ccache -d ../ccberyllium -vs
           bash build_kernel.sh
+          ccache -d ../ccberyllium -vs
           time { make clean && make mrproper ;}
           rm -rf kernelzip
           rm -rf bl-*.txt
