@@ -23,11 +23,11 @@ jobs:
       - name: Clone
         if: steps.cache.outputs.cache-hit != 'false'
         run: |
-          git clone https://github.com/$GITHUB_REPO -b $GITHUB_REFNAME beryllium && cd beryllium && git branch && git reset --hard
+          git clone --depth 1 https://github.com/$GITHUB_REPO -b $GITHUB_REFNAME beryllium && cd beryllium && git branch && git reset --hard
       - name: Update
         if: steps.cache.outputs.cache-hit == 'false'
         run: |
-          cd beryllium && git fetch origin $GITHUB_REFNAME && git checkout origin/$GITHUB_REFNAME && git branch -D $GITHUB_REFNAME && git checkout -b $GITHUB_REFNAME && git branch && git reset --hard
+          cd beryllium && git fetch --depth 1 origin $GITHUB_REFNAME && git checkout origin/$GITHUB_REFNAME && git branch -D $GITHUB_REFNAME && git checkout -b $GITHUB_REFNAME && git branch && git reset --hard
       - name: Build
         run: |
           export TZ='Asia/Kolkata' && date
