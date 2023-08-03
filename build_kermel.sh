@@ -4,7 +4,7 @@
 export TZ='Asia/Kolkata' && date
 export KERNELDIR=`readlink -f .`
 echo "kerneldir = $KERNELDIR"
-#export CCACHE_DIR=$PWD/../ccberyllium
+export CCACHE_DIR=$PWD/../ccberyllium
 
 TG=$HOME/telegram.sh/telegram
 TGSTKR="curl https://api.telegram.org/bot${BOT_API_KEY}/sendSticker -d "chat_id=${CHAT_ID}" -d sticker="

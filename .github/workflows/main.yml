@@ -17,7 +17,7 @@ jobs:
         with:
           path: |
             beryllium
-            #ccberyllium
+            ccberyllium
           key: beryllium-${{ github.ref_name }}-${{ runner.os }}-${{ github.run_id }}
           restore-keys: |
             beryllium-${{ github.ref_name }}-${{ runner.os }}
@@ -37,11 +37,11 @@ jobs:
         run: |
           export TZ='Asia/Kolkata' && date
           cd beryllium && ls && git status
-          #ccache -d ../ccberyllium -vs
+          ccache -d ../ccberyllium -vs
           #ccache -d ../ccberyllium -cC
           #ccache -d ../ccberyllium -vs
           bash build_kermel.sh
-          #ccache -d ../ccberyllium -vs
+          ccache -d ../ccberyllium -vs
           time { make clean && make mrproper ;}
           rm -rf kernelzip
           rm -rf bl-*.txt
