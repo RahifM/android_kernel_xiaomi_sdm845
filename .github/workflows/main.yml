@@ -36,12 +36,15 @@ jobs:
       - name: Build
         run: |
           export TZ='Asia/Kolkata' && date
-          #rm -rf beryllium
-          cd beryllium && ls
+          cd beryllium && ls && git status
           ccache -d ../ccberyllium -vs
           #ccache -d ../ccberyllium -cC
           #ccache -d ../ccberyllium -vs
-          #make clean && make mrproper
           bash rm.sh
           bash build_kernel.sh
           ccache -d ../ccberyllium -vs
+          time { make clean && make mrproper ;}
+          rm -rf kernelzip
+          rm -rf bl-*.txt
+          rm -rf wbl-*.txt
+          rm -rf arter97-beryllium*.zip
