@@ -43,11 +43,14 @@ rm -rf wbl-*.txt
 rm -rf arter97-beryllium*.zip
 
 # Start the build
+SECONDS=0
 make arter_beryllium_defconfig
 time make -j$(nproc --all) 2>&1 | tee bl-$(date +'%Y%m%d-%H%M').txt
 
 if [ "$(grep Image.gz $LOG | cut -d / -f 4)" == "" ] ; then
-	$TG -f $LOG "Kernel compilation failed."
+	duration=$SECONDS
+	echo "Build failed. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
+	$TG -f $LOG "Build failed. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
 	exit 1
 fi
 
@@ -78,6 +81,9 @@ cp arter97-beryllium-$VERSION.zip ../arter97-beryllium-$VERSION.zip
 cd ..
 
 # Upload package
+duration=$SECONDS
+echo "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
+$TG "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
 $TG -f arter97-beryllium-$VERSION.zip "$(ls arter97-bery*)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/uts* | cut -d '"' -f 2)"$'\n'$'\n'"HEAD: $(git log -n 1 --oneline)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/comp*h | grep LINUX_COMPILER | cut -d '"' -f 2)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/comp*h | grep UTS_VERSION | cut -d '"' -f 2)"
 mv $LOG bl-$(ls arter*zip | rev | cut -d / -f 1 | rev | cut -d . -f 2 | cut -d - -f 2-).txt
 $TG -f $LOG
