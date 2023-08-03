@@ -17,6 +17,7 @@ jobs:
         with:
           path: |
             beryllium
+            ccberyllium
           key: beryllium-${{ github.ref_name }}-${{ runner.os }}-${{ github.run_id }}
           restore-keys: |
             beryllium-${{ github.ref_name }}-${{ runner.os }}
@@ -28,11 +29,19 @@ jobs:
         if: steps.cache.outputs.cache-hit == 'false'
         run: |
           cd beryllium && git fetch --depth 1 origin $GITHUB_REFNAME && git checkout origin/$GITHUB_REFNAME && git branch -D $GITHUB_REFNAME && git checkout -b $GITHUB_REFNAME && git branch && git reset --hard
+      - name: Add pkgs
+        run: |
+          sudo apt-get update
+          sudo apt-get install ccache -y
       - name: Build
         run: |
           export TZ='Asia/Kolkata' && date
           #rm -rf beryllium
           cd beryllium && ls
+          ccache -d ../ccberyllium -vs
+          #ccache -d ../ccberyllium -cC
+          #ccache -d ../ccberyllium -vs
           #make clean && make mrproper
           bash rm.sh
           bash build_kernel.sh
+          ccache -d ../ccberyllium -vs
