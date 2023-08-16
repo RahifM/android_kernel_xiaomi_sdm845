@@ -24,7 +24,7 @@ jobs:
       - name: Clone
         if: steps.cache.outputs.cache-hit != 'false'
         run: |
-          git clone --depth 1 https://github.com/$GITHUB_REPO -b $GITHUB_REFNAME beryllium && cd beryllium && git branch && git reset --hard
+          git clone --depth 1 https://github.com/$GITHUB_REPO -b $GITHUB_REFNAME beryllium && cd beryllium && git branch && git reset --hard || cd beryllium
       - name: Update
         if: steps.cache.outputs.cache-hit == 'false'
         run: |
