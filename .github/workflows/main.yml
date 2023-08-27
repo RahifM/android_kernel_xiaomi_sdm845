@@ -32,7 +32,7 @@ jobs:
       - name: Add pkgs
         run: |
           sudo apt-get update
-          sudo apt-get install ccache -y
+          sudo apt-get install ccache pigz -y
       - name: Build
         run: |
           export TZ='Asia/Kolkata' && date
