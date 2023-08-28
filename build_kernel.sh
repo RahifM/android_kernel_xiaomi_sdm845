@@ -39,9 +39,9 @@ echo "Compiling kernel"
 $TG "Build started $(date +'%Y%m%d %H%M %Z')"$'\n'$'\n'"Branch: $(git branch --show-current)"$'\n'$'\n'"HEAD: $(git log -n 1 --oneline)"
 
 # Cleanup before start
-#rm -rf bl-*.txt
-#rm -rf wbl-*.txt
-#rm -rf arter97-beryllium*.zip
+rm -rf bl-*.txt
+rm -rf wbl-*.txt
+rm -rf simple-beryllium*.zip
 
 # Start the build
 SECONDS=0
@@ -55,34 +55,23 @@ if [ "$(grep Image.gz $LOG | cut -d / -f 4)" == "" ] ; then
 	exit 1
 fi
 
-$TG -f $LOG "Kernel compilation success."
+#$TG -f $LOG "Kernel compilation success."
 
 pack() {
-VERSION="$(cat version)-g$(git rev-parse --verify --short=8 HEAD 2>/dev/null)-$(date +'%Y%m%d-%H%M')"
+VERSION="g$(git rev-parse --verify --short=8 HEAD 2>/dev/null)-$(date +'%Y%m%d-%H%M')"
 
-rm arter97-beryllium-$VERSION.zip 2>/dev/null
+rm simple-beryllium-$VERSION.zip 2>/dev/null
 
 # Pack AnyKernel2
 rm -rf kernelzip
-mkdir -p kernelzip/dtbs
-cp arch/arm64/boot/Image.gz kernelzip/
-find arch/arm64/boot -name '*.dtb' -exec cp {} kernelzip/dtbs/ \;
-echo "
-kernel.string=arter97 kernel $(cat version) @ xda-developers
-do.devicecheck=1
-do.modules=0
-do.cleanup=1
-do.cleanuponabort=0
-device.name1=beryllium
-block=/dev/block/bootdevice/by-name/boot
-is_slot_device=auto
-ramdisk_compression=auto
-" > kernelzip/props
-cp -rp $KERNELDIR/anykernel2/* kernelzip/
+mkdir -p kernelzip
+cp out/arch/arm64/boot/Image.gz-dtb kernelzip/
+cp -rp $KERNELDIR/zip-out/* kernelzip/
 cd kernelzip/
-7z a -mx0 arter97-beryllium-$VERSION.zip *
-cp arter97-beryllium-$VERSION.zip ../arter97-beryllium-$VERSION.zip
+7z a -mx0 simple-beryllium-$VERSION.zip *
+cp simple-beryllium-$VERSION.zip ../simple-beryllium-$VERSION.zip
 cd ..
+rm -rf kernelzip
 }
 
 up() {
@@ -90,8 +79,8 @@ up() {
 duration=$SECONDS
 echo "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
 $TG "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
-$TG -f arter97-beryllium-$VERSION.zip "$(ls arter97-bery*)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/uts* | cut -d '"' -f 2)"$'\n'$'\n'"HEAD: $(git log -n 1 --oneline)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/comp*h | grep LINUX_COMPILER | cut -d '"' -f 2)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/comp*h | grep UTS_VERSION | cut -d '"' -f 2)"
-mv $LOG bl-$(ls arter*zip | rev | cut -d / -f 1 | rev | cut -d . -f 2 | cut -d - -f 2-).txt
+$TG -f simple-beryllium-$VERSION.zip "$(ls simple-bery*)"$'\n'$'\n'"$(cat $KERNELDIR/out/include/generated/uts* | cut -d '"' -f 2)"$'\n'$'\n'"HEAD: $(git log -n 1 --oneline)"$'\n'$'\n'"$(cat $KERNELDIR/out/include/generated/comp*h | grep LINUX_COMPILER | cut -d '"' -f 2)"$'\n'$'\n'"$(cat $KERNELDIR/out/include/generated/comp*h | grep UTS_VERSION | cut -d '"' -f 2)"
+mv $LOG bl-$(ls simple*zip | rev | cut -d / -f 1 | rev | cut -d . -f 2 | cut -d - -f 2-).txt
 $TG -f $LOG
 # Grep warnings if any
 grep warning* $LOG > w$(ls $LOG | rev | cut -d / -f 1 | rev)
@@ -102,4 +91,4 @@ else
 fi
 }
 
-#pack && up
+pack && up
