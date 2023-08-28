@@ -42,8 +42,8 @@ jobs:
           #ccache -d ../ccberyllium -vs
           bash build_kernel.sh
           #ccache -d ../ccberyllium -vs
-          #time { make clean && make mrproper ;}
-          #rm -rf kernelzip
-          #rm -rf bl-*.txt
-          #rm -rf wbl-*.txt
-          #rm -rf arter97-beryllium*.zip
+          time { make clean && make mrproper ;}
+          rm -rf kernelzip
+          rm -rf bl-*.txt
+          rm -rf wbl-*.txt
+          rm -rf simple-beryllium*.zip
