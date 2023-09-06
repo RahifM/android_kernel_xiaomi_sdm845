@@ -7,6 +7,7 @@ echo "kerneldir = $KERNELDIR"
 export CCACHE_DIR=$PWD/../ccberyllium
 
 TG=$HOME/telegram.sh/telegram
+TGSTKR="curl https://api.telegram.org/bot${BOT_API_KEY}/sendSticker -d "chat_id=${CHAT_ID}" -d sticker="
 LOG=$KERNELDIR/bl*.txt
 LOG2=$KERNELDIR/wbl*.txt
 
@@ -52,6 +53,7 @@ if [ "$(grep Image.gz $LOG | cut -d / -f 4)" == "" ] ; then
 	duration=$SECONDS
 	echo "Build failed. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
 	$TG -f $LOG "Build failed. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
+	$TGSTKR"CAACAgIAAx0CZHWblQACGmxk7EsPW2fdT4kE9c80hf7rCjeo7AACLQADtEzqKNU0XYBPAmKKMAQ"
 	exit 1
 fi
 
@@ -95,3 +97,4 @@ if [ "$(cat $LOG2)" == "" ]; then
 else
 	$TG -f $LOG2
 fi
+$TGSTKR"CAACAgIAAx0CZHWblQACGmtk7EsOE7CE28UD_n4bcQQXr_pKTwACPgADtEzqKETA00xcaOSEMAQ"
