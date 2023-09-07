@@ -77,7 +77,7 @@ ramdisk_compression=auto
 " > kernelzip/props
 cp -rp $KERNELDIR/anykernel2/* kernelzip/
 cd kernelzip/
-7z a -mx0 arter97-beryllium-$VERSION.zip *
+zip -r9 arter97-beryllium-$VERSION.zip *
 cp arter97-beryllium-$VERSION.zip ../arter97-beryllium-$VERSION.zip
 cd ..
 
