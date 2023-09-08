@@ -57,10 +57,10 @@ if [ "$(grep Image.gz $LOG | cut -d / -f 4)" == "" ] ; then
 	exit 1
 fi
 
-#duration=$SECONDS
-#echo "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
-#$TG -f $LOG "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
-#$TGSTKR"CAACAgIAAx0CZHWblQACGmtk7EsOE7CE28UD_n4bcQQXr_pKTwACPgADtEzqKETA00xcaOSEMAQ"
+duration=$SECONDS
+echo "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
+$TG -f $LOG "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
+$TGSTKR"CAACAgIAAx0CZHWblQACGmtk7EsOE7CE28UD_n4bcQQXr_pKTwACPgADtEzqKETA00xcaOSEMAQ"
 
 pack() {
 VERSION="$(cat version)-g$(git rev-parse --verify --short=8 HEAD 2>/dev/null)-$(date +'%Y%m%d-%H%M')"
@@ -108,4 +108,4 @@ fi
 $TGSTKR"CAACAgIAAx0CZHWblQACGmtk7EsOE7CE28UD_n4bcQQXr_pKTwACPgADtEzqKETA00xcaOSEMAQ"
 }
 
-pack && up
+#pack && up
