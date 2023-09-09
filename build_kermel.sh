@@ -57,36 +57,25 @@ if [ "$(grep Image.gz $LOG | cut -d / -f 4)" == "" ] ; then
 	exit 1
 fi
 
-duration=$SECONDS
-echo "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
-$TG -f $LOG "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
-$TGSTKR"CAACAgIAAx0CZHWblQACGmtk7EsOE7CE28UD_n4bcQQXr_pKTwACPgADtEzqKETA00xcaOSEMAQ"
+#duration=$SECONDS
+#echo "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
+#$TG -f $LOG "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
+#$TGSTKR"CAACAgIAAx0CZHWblQACGmtk7EsOE7CE28UD_n4bcQQXr_pKTwACPgADtEzqKETA00xcaOSEMAQ"
 
 pack() {
-VERSION="$(cat version)-g$(git rev-parse --verify --short=8 HEAD 2>/dev/null)-$(date +'%Y%m%d-%H%M')"
+VERSION="g$(git rev-parse --verify --short=8 HEAD 2>/dev/null)-$(date +'%Y%m%d-%H%M')"
 
-rm arter97-beryllium-$VERSION.zip 2>/dev/null
+rm fk-beryllium-$VERSION.zip 2>/dev/null
 
 # Pack AnyKernel2
 rm -rf kernelzip
 mkdir -p kernelzip/dtbs
 cp arch/arm64/boot/Image.gz kernelzip/
 find arch/arm64/boot -name '*.dtb' -exec cp {} kernelzip/dtbs/ \;
-echo "
-kernel.string=arter97 kernel $(cat version) @ xda-developers
-do.devicecheck=1
-do.modules=0
-do.cleanup=1
-do.cleanuponabort=0
-device.name1=beryllium
-block=/dev/block/bootdevice/by-name/boot
-is_slot_device=auto
-ramdisk_compression=auto
-" > kernelzip/props
 cp -rp $KERNELDIR/anykernel2/* kernelzip/
 cd kernelzip/
-zip -r9 arter97-beryllium-$VERSION.zip *
-cp arter97-beryllium-$VERSION.zip ../arter97-beryllium-$VERSION.zip
+zip -r9 fk-beryllium-$VERSION.zip *
+cp fk-beryllium-$VERSION.zip ../fk-beryllium-$VERSION.zip
 cd ..
 }
 
@@ -94,8 +83,8 @@ up() {
 # Upload package
 duration=$SECONDS
 echo "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
-$TG -f arter97-beryllium-$VERSION.zip "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"$'\n'$'\n'"$(ls arter97-bery*)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/comp*h | grep LINUX_COMPILER | cut -d '"' -f 2)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/comp*h | grep UTS_VERSION | cut -d '"' -f 2)"
-mv $LOG bl-$(ls arter*zip | rev | cut -d / -f 1 | rev | cut -d . -f 2 | cut -d - -f 3-).txt
+$TG -f fk-beryllium-$VERSION.zip "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"$'\n'$'\n'"$(ls fk-bery*)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/comp*h | grep LINUX_COMPILER | cut -d '"' -f 2)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/comp*h | grep UTS_VERSION | cut -d '"' -f 2)"
+mv $LOG bl-$(ls fk*zip | rev | cut -d / -f 1 | rev | cut -d . -f 2 | cut -d - -f 3-).txt
 $TG -f $LOG
 # Grep warnings if any
 grep warning* $LOG > w$(ls $LOG | rev | cut -d / -f 1 | rev)
@@ -107,4 +96,4 @@ fi
 $TGSTKR"CAACAgIAAx0CZHWblQACGmtk7EsOE7CE28UD_n4bcQQXr_pKTwACPgADtEzqKETA00xcaOSEMAQ"
 }
 
-#pack && up
+pack && up
