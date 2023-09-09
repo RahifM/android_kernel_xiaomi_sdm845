@@ -4,7 +4,7 @@
 export TZ='Asia/Kolkata' && date
 export KERNELDIR=`readlink -f .`
 echo "kerneldir = $KERNELDIR"
-export CCACHE_DIR=$PWD/../ccberyllium
+#export CCACHE_DIR=$PWD/../ccberyllium
 
 TG=$HOME/telegram.sh/telegram
 TGSTKR="curl https://api.telegram.org/bot${BOT_API_KEY}/sendSticker -d "chat_id=${CHAT_ID}" -d sticker="
@@ -42,11 +42,11 @@ $TG "Build started $(date +'%Y%m%d %H%M %Z')"$'\n'$'\n'"Branch: $(git branch --s
 # Cleanup before start
 rm -rf bl-*.txt
 rm -rf wbl-*.txt
-rm -rf arter97-beryllium*.zip
+rm -rf fk-beryllium*.zip
 
 # Start the build
 SECONDS=0
-make arter_beryllium_defconfig
+make franco_defconfig
 time make -j$(nproc --all) 2>&1 | tee bl-$(date +'%Y%m%d-%H%M').txt
 
 if [ "$(grep Image.gz $LOG | cut -d / -f 4)" == "" ] ; then
@@ -57,10 +57,10 @@ if [ "$(grep Image.gz $LOG | cut -d / -f 4)" == "" ] ; then
 	exit 1
 fi
 
-#duration=$SECONDS
-#echo "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
-#$TG -f $LOG "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
-#$TGSTKR"CAACAgIAAx0CZHWblQACGmtk7EsOE7CE28UD_n4bcQQXr_pKTwACPgADtEzqKETA00xcaOSEMAQ"
+duration=$SECONDS
+echo "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
+$TG -f $LOG "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
+$TGSTKR"CAACAgIAAx0CZHWblQACGmtk7EsOE7CE28UD_n4bcQQXr_pKTwACPgADtEzqKETA00xcaOSEMAQ"
 
 pack() {
 VERSION="$(cat version)-g$(git rev-parse --verify --short=8 HEAD 2>/dev/null)-$(date +'%Y%m%d-%H%M')"
@@ -107,4 +107,4 @@ fi
 $TGSTKR"CAACAgIAAx0CZHWblQACGmtk7EsOE7CE28UD_n4bcQQXr_pKTwACPgADtEzqKETA00xcaOSEMAQ"
 }
 
-pack && up
+#pack && up
