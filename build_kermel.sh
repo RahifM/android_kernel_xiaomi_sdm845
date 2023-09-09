@@ -70,8 +70,8 @@ rm fk-beryllium-$VERSION.zip 2>/dev/null
 # Pack AnyKernel2
 rm -rf kernelzip
 mkdir -p kernelzip/dtbs
-cp arch/arm64/boot/Image.gz kernelzip/
-find arch/arm64/boot -name '*.dtb' -exec cp {} kernelzip/dtbs/ \;
+cp out/arch/arm64/boot/Image.gz kernelzip/
+find out/arch/arm64/boot -name '*.dtb' -exec cp {} kernelzip/dtbs/ \;
 cp -rp $KERNELDIR/anykernel2/* kernelzip/
 cd kernelzip/
 zip -r9 fk-beryllium-$VERSION.zip *
@@ -83,7 +83,7 @@ up() {
 # Upload package
 duration=$SECONDS
 echo "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
-$TG -f fk-beryllium-$VERSION.zip "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"$'\n'$'\n'"$(ls fk-bery*)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/comp*h | grep LINUX_COMPILER | cut -d '"' -f 2)"$'\n'$'\n'"$(cat $KERNELDIR/include/generated/comp*h | grep UTS_VERSION | cut -d '"' -f 2)"
+$TG -f fk-beryllium-$VERSION.zip "Build successful. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"$'\n'$'\n'"$(ls fk-bery*)"$'\n'$'\n'"$(cat $KERNELDIR/out/include/generated/comp*h | grep LINUX_COMPILER | cut -d '"' -f 2)"$'\n'$'\n'"$(cat $KERNELDIR/out/include/generated/comp*h | grep UTS_VERSION | cut -d '"' -f 2)"
 mv $LOG bl-$(ls fk*zip | rev | cut -d / -f 1 | rev | cut -d . -f 2 | cut -d - -f 3-).txt
 $TG -f $LOG
 # Grep warnings if any
