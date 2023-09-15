@@ -70,8 +70,8 @@ rm fk-beryllium-$VERSION.zip 2>/dev/null
 # Pack AnyKernel2
 rm -rf kernelzip
 mkdir -p kernelzip/dtbs
-cp out/arch/arm64/boot/Image.gz kernelzip/
-find out/arch/arm64/boot -name '*.dtb' -exec cp {} kernelzip/dtbs/ \;
+cp out/arch/arm64/boot/Image.gz-dtb kernelzip/
+#find out/arch/arm64/boot -name '*.dtb' -exec cp {} kernelzip/dtbs/ \;
 cp -rp $KERNELDIR/anykernel2/* kernelzip/
 cd kernelzip/
 zip -r9 fk-beryllium-$VERSION.zip *
