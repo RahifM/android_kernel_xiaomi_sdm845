@@ -67,14 +67,14 @@ VERSION="g$(git rev-parse --verify --short=8 HEAD 2>/dev/null)-$(date +'%Y%m%d-%
 
 rm fk-beryllium-$VERSION.zip 2>/dev/null
 
-# Pack AnyKernel2
+# Pack AnyKernel3
 rm -rf kernelzip
 mkdir -p kernelzip/dtbs
 cp out/arch/arm64/boot/Image.gz-dtb kernelzip/
 #find out/arch/arm64/boot -name '*.dtb' -exec cp {} kernelzip/dtbs/ \;
-cp -rp $KERNELDIR/anykernel2/* kernelzip/
+cp -rp $KERNELDIR/anykernel3/* kernelzip/
 cd kernelzip/
-zip -r9 fk-beryllium-$VERSION.zip *
+zip -r9 fk-beryllium-$VERSION.zip * -x *placeholder
 cp fk-beryllium-$VERSION.zip ../fk-beryllium-$VERSION.zip
 cd ..
 }
