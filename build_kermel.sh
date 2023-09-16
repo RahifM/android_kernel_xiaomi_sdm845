@@ -63,7 +63,7 @@ fi
 #$TGSTKR"CAACAgIAAx0CZHWblQACGmtk7EsOE7CE28UD_n4bcQQXr_pKTwACPgADtEzqKETA00xcaOSEMAQ"
 
 pack() {
-VERSION="g$(git rev-parse --verify --short=8 HEAD 2>/dev/null)-$(date +'%Y%m%d-%H%M')"
+VERSION="r32.1-g$(git rev-parse --verify --short=8 HEAD 2>/dev/null)-$(date +'%Y%m%d-%H%M')"
 
 rm fk-beryllium-$VERSION.zip 2>/dev/null
 
