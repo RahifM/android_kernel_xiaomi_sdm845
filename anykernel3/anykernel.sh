@@ -4,14 +4,14 @@
 ### AnyKernel setup
 # global properties
 properties() { '
-kernel.string=ExampleKernel by osm0sis @ xda-developers
+kernel.string=Franco Kernel by franciscofranco @ xda-developers
 do.devicecheck=1
 do.modules=0
 do.systemless=1
 do.cleanup=1
 do.cleanuponabort=0
 device.name1=beryllium
-supported.versions=
+supported.versions=9, 9.0
 supported.patchlevels=
 supported.vendorpatchlevels=
 '; } # end properties
