@@ -11740,10 +11740,13 @@ const struct sched_class fair_sched_class = {
 #ifdef CONFIG_FAIR_GROUP_SCHED
 	.task_change_group	= task_change_group_fair,
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_WALT
 	.fixup_walt_sched_stats	= walt_fixup_sched_stats_fair,
 	.fixup_cumulative_runnable_avg = walt_fixup_cumulative_runnable_avg,
 #endif
+=======
+>>>>>>> parent of 1c847afb1a7c (ANDROID: sched: WALT: Refactor cumulative runnable average fixup)
 };
 
 #ifdef CONFIG_SCHED_DEBUG
