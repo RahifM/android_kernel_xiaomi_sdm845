@@ -4304,28 +4304,16 @@ static void throttle_cfs_rq(struct cfs_rq *cfs_rq)
 		if (dequeue)
 			dequeue_entity(qcfs_rq, se, DEQUEUE_SLEEP);
 		qcfs_rq->h_nr_running -= task_delta;
-<<<<<<< HEAD
 		walt_dec_throttled_cfs_rq_stats(&qcfs_rq->walt_stats, cfs_rq);
-		walt_propagate_cumulative_runnable_avg(
-				   &qcfs_rq->cumulative_runnable_avg,
-				   cfs_rq->cumulative_runnable_avg, false);
-=======
->>>>>>> parent of 351d3fad7687 (ANDROID: sched: WALT: Add support for CFS_BANDWIDTH)
 
 		if (qcfs_rq->load.weight)
 			dequeue = 0;
 	}
 
-	if (!se)
+	if (!se) {
 		sub_nr_running(rq, task_delta);
-<<<<<<< HEAD
 		walt_dec_throttled_cfs_rq_stats(&rq->walt_stats, cfs_rq);
-		walt_propagate_cumulative_runnable_avg(
-				   &rq->cumulative_runnable_avg,
-				   cfs_rq->cumulative_runnable_avg, false);
 	}
-=======
->>>>>>> parent of 351d3fad7687 (ANDROID: sched: WALT: Add support for CFS_BANDWIDTH)
 
 	cfs_rq->throttled = 1;
 	cfs_rq->throttled_clock = rq_clock(rq);
@@ -4386,28 +4374,16 @@ void unthrottle_cfs_rq(struct cfs_rq *cfs_rq)
 		if (enqueue)
 			enqueue_entity(cfs_rq, se, ENQUEUE_WAKEUP);
 		cfs_rq->h_nr_running += task_delta;
-<<<<<<< HEAD
 		walt_inc_throttled_cfs_rq_stats(&cfs_rq->walt_stats, tcfs_rq);
-		walt_propagate_cumulative_runnable_avg(
-				   &cfs_rq->cumulative_runnable_avg,
-				   tcfs_rq->cumulative_runnable_avg, true);
-=======
->>>>>>> parent of 351d3fad7687 (ANDROID: sched: WALT: Add support for CFS_BANDWIDTH)
 
 		if (cfs_rq_throttled(cfs_rq))
 			break;
 	}
 
-	if (!se)
+	if (!se) {
 		add_nr_running(rq, task_delta);
-<<<<<<< HEAD
 		walt_inc_throttled_cfs_rq_stats(&rq->walt_stats, tcfs_rq);
-		walt_propagate_cumulative_runnable_avg(
-				   &rq->cumulative_runnable_avg,
-				   tcfs_rq->cumulative_runnable_avg, true);
 	}
-=======
->>>>>>> parent of 351d3fad7687 (ANDROID: sched: WALT: Add support for CFS_BANDWIDTH)
 
 	/* determine whether we need to wake up potentially idle cpu */
 	if (rq->curr == rq->idle && rq->cfs.nr_running)
@@ -11765,13 +11741,8 @@ const struct sched_class fair_sched_class = {
 	.task_change_group	= task_change_group_fair,
 #endif
 #ifdef CONFIG_SCHED_WALT
-<<<<<<< HEAD
 	.fixup_walt_sched_stats	= walt_fixup_sched_stats_fair,
-	.fixup_cumulative_runnable_avg =
-		walt_fixup_cumulative_runnable_avg_fair,
-=======
 	.fixup_cumulative_runnable_avg = walt_fixup_cumulative_runnable_avg,
->>>>>>> parent of 351d3fad7687 (ANDROID: sched: WALT: Add support for CFS_BANDWIDTH)
 #endif
 };
 
