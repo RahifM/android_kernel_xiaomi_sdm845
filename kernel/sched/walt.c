@@ -1770,12 +1770,8 @@ static void update_history(struct rq *rq, struct task_struct *p,
 	 */
 	if (!task_has_dl_policy(p) || !p->dl.dl_throttled) {
 		if (task_on_rq_queued(p))
-<<<<<<< HEAD
-			p->sched_class->fixup_walt_sched_stats(rq, p, demand,
-							       pred_demand);
-=======
-			fixup_cumulative_runnable_avg(rq, p, demand);
->>>>>>> parent of 1c847afb1a7c (ANDROID: sched: WALT: Refactor cumulative runnable average fixup)
+			fixup_cumulative_runnable_avg(rq, p, demand,
+					pred_demand);
 		else if (rq->curr == p)
 			walt_fixup_cum_window_demand(rq, demand);
 	}

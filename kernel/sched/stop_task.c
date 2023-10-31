@@ -137,11 +137,7 @@ const struct sched_class stop_sched_class = {
 	.prio_changed		= prio_changed_stop,
 	.switched_to		= switched_to_stop,
 	.update_curr		= update_curr_stop,
-<<<<<<< HEAD
 #ifdef CONFIG_SCHED_WALT
 	.fixup_walt_sched_stats	= fixup_walt_sched_stats_common,
-	.fixup_cumulative_runnable_avg = walt_fixup_cumulative_runnable_avg,
 #endif
-=======
->>>>>>> parent of 1c847afb1a7c (ANDROID: sched: WALT: Refactor cumulative runnable average fixup)
 };

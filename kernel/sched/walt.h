@@ -16,7 +16,6 @@
 
 #ifdef CONFIG_SCHED_WALT
 
-<<<<<<< HEAD
 #include <linux/sched/sysctl.h>
 
 #define WINDOW_STATS_RECENT		0
@@ -156,14 +155,6 @@ extern void mark_task_starting(struct task_struct *p);
 extern void set_window_start(struct rq *rq);
 void account_irqtime(int cpu, struct task_struct *curr, u64 delta,
                                   u64 wallclock);
-void walt_fixup_cumulative_runnable_avg(struct rq *rq, struct task_struct *p,
-					u64 new_task_load);
-=======
-void walt_update_task_ravg(struct task_struct *p, struct rq *rq, int event,
-		u64 wallclock, u64 irqtime);
-void walt_inc_cumulative_runnable_avg(struct rq *rq, struct task_struct *p);
-void walt_dec_cumulative_runnable_avg(struct rq *rq, struct task_struct *p);
->>>>>>> parent of 1c847afb1a7c (ANDROID: sched: WALT: Refactor cumulative runnable average fixup)
 
 
 
@@ -312,27 +303,10 @@ extern unsigned int walt_rotation_enabled;
 
 #else /* CONFIG_SCHED_WALT */
 
-<<<<<<< HEAD
 static inline void walt_sched_init(struct rq *rq) { }
 static inline void walt_rotate_work_init(void) { }
 static inline void walt_rotation_checkpoint(int nr_big) { }
 static inline void walt_update_last_enqueue(struct task_struct *p) { }
-static inline void walt_fixup_cumulative_runnable_avg(struct rq *rq,
-						      struct task_struct *p,
-						      u64 new_task_load) { }
-=======
-static inline void walt_update_task_ravg(struct task_struct *p, struct rq *rq,
-		int event, u64 wallclock, u64 irqtime) { }
-static inline void walt_inc_cumulative_runnable_avg(struct rq *rq, struct task_struct *p) { }
-static inline void walt_dec_cumulative_runnable_avg(struct rq *rq, struct task_struct *p) { }
-static inline void walt_fixup_busy_time(struct task_struct *p, int new_cpu) { }
-static inline void walt_init_new_task_load(struct task_struct *p) { }
-static inline void walt_mark_task_starting(struct task_struct *p) { }
-static inline void walt_set_window_start(struct rq *rq) { }
-static inline void walt_migrate_sync_cpu(int cpu) { }
-static inline void walt_init_cpu_efficiency(void) { }
-static inline u64 walt_ktime_clock(void) { return 0; }
->>>>>>> parent of 1c847afb1a7c (ANDROID: sched: WALT: Refactor cumulative runnable average fixup)
 
 static inline void update_task_ravg(struct task_struct *p, struct rq *rq,
 				int event, u64 wallclock, u64 irqtime) { }

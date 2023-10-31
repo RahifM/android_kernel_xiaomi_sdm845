@@ -1563,16 +1563,10 @@ struct sched_class {
 #ifdef CONFIG_FAIR_GROUP_SCHED
 	void (*task_change_group) (struct task_struct *p, int type);
 #endif
-<<<<<<< HEAD
 #ifdef CONFIG_SCHED_WALT
 	void (*fixup_walt_sched_stats)(struct rq *rq, struct task_struct *p,
 				      u32 new_task_load, u32 new_pred_demand);
-	void (*fixup_cumulative_runnable_avg)(struct rq *rq,
-					      struct task_struct *task,
-					      u64 new_task_load);
 #endif
-=======
->>>>>>> parent of 1c847afb1a7c (ANDROID: sched: WALT: Refactor cumulative runnable average fixup)
 };
 
 static inline void put_prev_task(struct rq *rq, struct task_struct *prev)
