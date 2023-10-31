@@ -53,8 +53,8 @@ u64 walt_load_reported_window;
 static struct irq_work walt_cpufreq_irq_work;
 static struct irq_work walt_migration_irq_work;
 
-static void
-fixup_cumulative_runnable_avg(struct rq *rq,
+void
+walt_fixup_cumulative_runnable_avg(struct rq *rq,
 			      struct task_struct *p, u64 new_task_load)
 {
 	s64 task_load_delta = (s64)new_task_load - task_load(p);
