@@ -23,12 +23,12 @@ fi
 if [ -d "arm32-gcc" ]; then
 	echo "arm32-gcc already exists"
 else
-	time git clone https://github.com/rahifm/arm32-gcc -b 9 --depth 1
+	time git clone https://github.com/rahifm/arm32-gcc -b master --depth 1
 fi
 if [ -d "arm64-gcc" ]; then
 	echo "arm64-gcc already exists"
 else
-	time git clone https://github.com/rahifm/arm64-gcc -b 9 --depth 1
+	time git clone https://github.com/rahifm/arm64-gcc -b master --depth 1
 fi
 
 if [ "$(whoami)" == "gitpod" ]; then
