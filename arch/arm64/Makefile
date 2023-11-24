@@ -83,7 +83,6 @@ ifeq ($(CONFIG_COMPAT_VDSO), y)
 endif
 
 KBUILD_CFLAGS	+= -mgeneral-regs-only $(lseinstr) $(vdso32)
-KBUILD_CFLAGS	+= -mcpu=cortex-a75.cortex-a55
 KBUILD_CFLAGS	+= -fno-asynchronous-unwind-tables
 KBUILD_CFLAGS	+= $(call cc-option, -mpc-relative-literal-loads)
 KBUILD_CFLAGS	+= -fno-pic
