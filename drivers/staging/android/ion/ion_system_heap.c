@@ -141,6 +141,12 @@ static struct page *alloc_buffer_page(struct ion_system_heap *heap,
 	if (!page)
 		return 0;
 
+<<<<<<< HEAD
+=======
+	if (page && cached)
+		ion_pages_sync_for_device(NULL, page, PAGE_SIZE << order,
+					  DMA_BIDIRECTIONAL);
+>>>>>>> f9b8314c64640cd10c7b14ce9d2a11a0dc02a941
 	return page;
 }
 

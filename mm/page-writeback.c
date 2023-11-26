@@ -2732,7 +2732,10 @@ int test_clear_page_writeback(struct page *page)
 	} else {
 		ret = TestClearPageWriteback(page);
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> f9b8314c64640cd10c7b14ce9d2a11a0dc02a941
 	/*
 	 * NOTE: Page might be free now! Writeback doesn't hold a page
 	 * reference on its own, it relies on truncation to wait for
@@ -2740,7 +2743,12 @@ int test_clear_page_writeback(struct page *page)
 	 * page state that is static across allocation cycles.
 	 */
 	if (ret) {
+<<<<<<< HEAD
 		mem_cgroup_dec_stat(memcg, MEM_CGROUP_STAT_WRITEBACK);
+=======
+		__mem_cgroup_update_page_stat(page, memcg,
+					      MEM_CGROUP_STAT_WRITEBACK, -1);
+>>>>>>> f9b8314c64640cd10c7b14ce9d2a11a0dc02a941
 		dec_node_page_state(page, NR_WRITEBACK);
 		dec_zone_page_state(page, NR_ZONE_WRITE_PENDING);
 		inc_node_page_state(page, NR_WRITTEN);

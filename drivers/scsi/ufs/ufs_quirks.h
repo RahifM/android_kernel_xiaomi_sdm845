@@ -20,8 +20,12 @@
 #define UFS_ANY_VENDOR -1
 #define UFS_ANY_MODEL  "ANY_MODEL"
 
+<<<<<<< HEAD
 #define MAX_MODEL_LEN 16
 
+=======
+#define UFS_VENDOR_MICRON      0x12C
+>>>>>>> f9b8314c64640cd10c7b14ce9d2a11a0dc02a941
 #define UFS_VENDOR_TOSHIBA     0x198
 #define UFS_VENDOR_SAMSUNG     0x1CE
 #define UFS_VENDOR_SKHYNIX     0x1AD

@@ -203,7 +203,11 @@ typedef struct rndis_params
 
 	void			*v;
 	struct list_head	resp_queue;
+<<<<<<< HEAD
 	spinlock_t		lock;
+=======
+	spinlock_t		resp_lock;
+>>>>>>> f9b8314c64640cd10c7b14ce9d2a11a0dc02a941
 } rndis_params;
 
 /* RNDIS Message parser and other useless functions */
