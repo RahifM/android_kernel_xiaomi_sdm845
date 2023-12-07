@@ -23,12 +23,17 @@ fi
 if [ -d "arm32-gcc" ]; then
 	echo "arm32-gcc already exists"
 else
-	time git clone https://github.com/rahifm/arm32-gcc -b master --depth 1
+	time git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 -b lineage-18.1 --depth 1 arm32-gcc
 fi
 if [ -d "arm64-gcc" ]; then
 	echo "arm64-gcc already exists"
 else
-	time git clone https://github.com/rahifm/arm64-gcc -b master --depth 1
+	time git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 -b lineage-18.1 --depth 1 arm64-gcc
+fi
+if [ -d "clang" ]; then
+	echo "clang already exists"
+else
+	time git clone https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 -b android11-release --depth 1 clang
 fi
 
 if [ "$(whoami)" == "gitpod" ]; then
@@ -46,8 +51,14 @@ rm -rf beryllium*.zip
 
 # Start the build
 SECONDS=0
-make beryllium_defconfig
-time make -j$(nproc --all) 2>&1 | tee bl-$(date +'%Y%m%d-%H%M').txt
+time make ARCH=arm64 beryllium_defconfig
+PATH="$KERNELDIR/clang/clang-r383902b/bin:$KERNELDIR/arm64-gcc/bin:$KERNELDIR/arm32-gcc/bin:${PATH}" \
+	time make -j$(nproc --all) ARCH=arm64 \
+	CC=clang \
+	CLANG_TRIPLE=aarch64-linux-gnu- \
+	CROSS_COMPILE=aarch64-linux-android- \
+	CROSS_COMPILE_ARM32=arm-linux-androideabi- \
+	2>&1 | tee bl-$(date +'%Y%m%d-%H%M').txt
 
 if [ "$(grep Image.gz $LOG | cut -d / -f 4)" == "" ] ; then
 	duration=$SECONDS
