@@ -11,30 +11,13 @@ TGSTKR="curl https://api.telegram.org/bot${BOT_API_KEY}/sendSticker -d "chat_id=
 LOG=$KERNELDIR/bl*.txt
 LOG2=$KERNELDIR/wbl*.txt
 
-if [ -d "$HOME/telegram.sh" ]; then
-	echo "Tgsh already exists"
-else
-time git clone https://github.com/fabianonline/telegram.sh $HOME/telegram.sh
-cp .telegram.sh $HOME/.telegram.sh
-sed -i s/demo1/${BOT_API_KEY}/g $HOME/.telegram.sh
-sed -i s/demo2/${CHAT_ID}/g $HOME/.telegram.sh
-fi
+cd $HOME/telegram.sh && cd $KERNELDIR || { git clone https://github.com/fabianonline/telegram.sh $HOME/telegram.sh && cp .telegram.sh $HOME/.telegram.sh && sed -i s/demo1/${BOT_API_KEY}/g $HOME/.telegram.sh && sed -i s/demo2/${CHAT_ID}/g $HOME/.telegram.sh ;}
 
-if [ -d "arm32-gcc" ]; then
-	echo "arm32-gcc already exists"
-else
-	time git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 -b lineage-18.1 --depth 1 arm32-gcc
-fi
-if [ -d "arm64-gcc" ]; then
-	echo "arm64-gcc already exists"
-else
-	time git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 -b lineage-18.1 --depth 1 arm64-gcc
-fi
-if [ -d "clang" ]; then
-	echo "clang already exists"
-else
-	time git clone https://github.com/RahifM/clang -b clang-r383902b --depth 1
-fi
+cd arm32-gcc && cd ../ || time git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 -b lineage-18.1 --depth 1 arm32-gcc
+
+cd arm64-gcc && cd ../ || time git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 -b lineage-18.1 --depth 1 arm64-gcc
+
+cd clang && cd ../ || time git clone https://github.com/RahifM/clang -b clang-r383902b --depth 1
 
 if [ "$(whoami)" == "gitpod" ]; then
         echo "Clean up for gitpod"
