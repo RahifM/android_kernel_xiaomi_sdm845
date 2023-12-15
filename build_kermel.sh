@@ -33,7 +33,7 @@ fi
 if [ -d "clang" ]; then
 	echo "clang already exists"
 else
-	time git clone https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 -b android11-release --depth 1 clang
+	time git clone https://github.com/RahifM/clang -b clang-r383902b --depth 1
 fi
 
 if [ "$(whoami)" == "gitpod" ]; then
