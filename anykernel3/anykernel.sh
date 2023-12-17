@@ -4,7 +4,6 @@
 ### AnyKernel setup
 # global properties
 properties() { '
-kernel.string=osm0sis @ xda-developers
 do.devicecheck=1
 do.modules=0
 do.systemless=1
