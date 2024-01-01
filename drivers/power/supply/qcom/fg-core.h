@@ -456,7 +456,7 @@ struct batt_params {
 	int		batt_mv;
 	int		batt_temp;
 	struct timespec		last_soc_change_time;
-}
+};
 
 struct fg_saved_data {
 	union power_supply_propval val;
