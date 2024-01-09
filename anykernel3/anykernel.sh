@@ -11,7 +11,7 @@ do.systemless=1
 do.cleanup=1
 do.cleanuponabort=0
 device.name1=beryllium
-supported.versions=11
+supported.versions=9
 supported.patchlevels=
 supported.vendorpatchlevels=
 '; } # end properties
