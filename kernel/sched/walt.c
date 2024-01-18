@@ -2626,6 +2626,7 @@ static void _set_preferred_cluster(struct related_thread_group *grp)
 {
 	struct task_struct *p;
 	u64 combined_demand = 0;
+	bool boost_on_big = sched_boost_policy() == SCHED_BOOST_ON_BIG;
 	bool group_boost = false;
 	u64 wallclock;
 
@@ -2649,7 +2650,7 @@ static void _set_preferred_cluster(struct related_thread_group *grp)
 		return;
 
 	list_for_each_entry(p, &grp->tasks, grp_list) {
-		if (task_boost_policy(p) == SCHED_BOOST_ON_BIG) {
+		if (boost_on_big && task_sched_boost(p)) {
 			group_boost = true;
 			break;
 		}
