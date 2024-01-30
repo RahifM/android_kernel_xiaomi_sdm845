@@ -102,7 +102,7 @@ modpost_link()
 			--end-group"
 	fi
 
-	if [ -n "${CONFIG_LTO_CLANG}" ]; then
+	if [ -n "${CONFIG_LTO_CLANG}" ] || [ -n "${CONFIG_LTO_GCC}" ]; then
 		# This might take a while, so indicate that we're doing
 		# an LTO link
 		info LTO vmlinux.o
@@ -110,7 +110,7 @@ modpost_link()
 		info LD vmlinux.o
 	fi
 
-	${LD} ${LDFLAGS} -r -o ${1} $(modversions) ${objects}
+	${LDFINAL} ${LDFLAGS} -r -o ${1} $(modversions) ${objects}
 }
 
 # If CONFIG_LTO_CLANG is selected, we postpone running recordmcount until
@@ -153,7 +153,7 @@ vmlinux_link()
 				${1}"
 		fi
 
-		${ld} ${ldflags} -o ${2} -T ${lds} ${objects}
+		${LDFINAL} ${ldflags} -o ${2} -T ${lds} ${objects}
 	else
 		if [ -n "${CONFIG_THIN_ARCHIVES}" ]; then
 			objects="-Wl,--whole-archive built-in.o ${1}"
@@ -200,7 +200,7 @@ kallsyms()
 
 	local afile="`basename ${2} .o`.S"
 
-	${NM} -n ${1} | scripts/kallsyms ${kallsymopt} > ${afile}
+	${NM} -n ${1} 2>/dev/null | scripts/kallsyms ${kallsymopt} > ${afile}
 	${CC} ${aflags} -c -o ${2} ${afile}
 }
 

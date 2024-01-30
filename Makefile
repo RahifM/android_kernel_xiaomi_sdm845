@@ -351,8 +351,8 @@ LD		= $(CROSS_COMPILE)ld
 CC		= $(CCACHE) $(CROSS_COMPILE)gcc
 LDGOLD		= $(CROSS_COMPILE)ld.gold
 CPP		= $(CC) -E
-AR		= $(CROSS_COMPILE)ar
-NM		= $(CROSS_COMPILE)nm
+AR	       ?= $(CROSS_COMPILE)ar
+NM	       ?= $(CROSS_COMPILE)nm
 STRIP		= $(CROSS_COMPILE)strip
 OBJCOPY		= $(CROSS_COMPILE)objcopy
 OBJDUMP		= $(CROSS_COMPILE)objdump
@@ -657,6 +657,22 @@ LLVM_DIS	:= llvm-dis
 export LLVM_AR LLVM_DIS
 endif
 
+ifdef CONFIG_LTO_GCC
+LTO_CFLAGS    := -flto -flto=jobserver -fno-fat-lto-objects \
+                 -fuse-linker-plugin -fwhole-program
+KBUILD_CFLAGS += $(LTO_CFLAGS)
+LTO_LDFLAGS   := $(LTO_CFLAGS) -Wno-lto-type-mismatch -Wno-psabi \
+		 -Wno-stringop-overflow -Wno-stringop-overread -flinker-output=nolto-rel
+LDFINAL       := $(CONFIG_SHELL) $(srctree)/scripts/gcc-ld $(LTO_LDFLAGS)
+AR            := $(CROSS_COMPILE)gcc-ar
+NM            := $(CROSS_COMPILE)gcc-nm
+DISABLE_LTO   := -fno-lto
+export DISABLE_LTO LDFINAL
+else
+LDFINAL       := $(LD)
+export LDFINAL
+endif
+
 # The arch Makefile can set ARCH_{CPP,A,C}FLAGS to override the default
 # values of the respective KBUILD_* variables
 ARCH_CPPFLAGS :=
@@ -730,7 +746,7 @@ else
 ifdef CONFIG_PROFILE_ALL_BRANCHES
 KBUILD_CFLAGS	+= -O2 $(call cc-disable-warning,maybe-uninitialized,)
 else
-KBUILD_CFLAGS   += -O2
+KBUILD_CFLAGS   += -O3
 endif
 endif
 
