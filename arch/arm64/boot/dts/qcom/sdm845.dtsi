@@ -5525,14 +5525,14 @@
 
 		zone@16 {
 			reg = <16>;
-			qcom,silver-khz = <902400>;
+			qcom,silver-khz = <1056000>;
 			qcom,gold-khz = <902400>;
 			qcom,trip-deg = <37000>;
 		};
 
 		zone@17 {
 			reg = <17>;
-			qcom,silver-khz = <902400>;
+			qcom,silver-khz = <1056000>;
 			qcom,gold-khz = <902400>;
 			qcom,trip-deg = <41000>;
 		};
