@@ -49,7 +49,7 @@ SECONDS=0
 make beryllium_stock_defconfig
 time make -j$(nproc --all) 2>&1 | tee bl-$(date +'%Y%m%d-%H%M').txt
 
-if [ "$(grep Image.gz $LOG | cut -d / -f 4)" == "" ] ; then
+if [ "$(grep Image.lz4 $LOG | cut -d / -f 4)" == "" ] ; then
 	duration=$SECONDS
 	echo "Build failed. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
 	$TG -f $LOG "Build failed. ($(($duration / 60)) minute(s) and $(($duration % 60)) seconds)"
@@ -70,7 +70,7 @@ rm beryllium-$VERSION.zip 2>/dev/null
 # Pack AnyKernel3
 rm -rf kernelzip
 mkdir -p kernelzip/
-cp out/arch/arm64/boot/Image.gz-dtb kernelzip/
+cp out/arch/arm64/boot/Image.lz4-dtb kernelzip/
 cp -rp $KERNELDIR/anykernel3/* kernelzip/
 cd kernelzip/
 zip -r9 beryllium-$VERSION.zip *
