@@ -17,7 +17,6 @@
 #include <crypto/internal/skcipher.h>
 #include <linux/bug.h>
 #include <linux/cryptouser.h>
-#include <linux/compiler.h>
 #include <linux/module.h>
 #include <linux/rtnetlink.h>
 #include <linux/seq_file.h>
@@ -304,7 +303,7 @@ static void crypto_skcipher_free_instance(struct crypto_instance *inst)
 }
 
 static void crypto_skcipher_show(struct seq_file *m, struct crypto_alg *alg)
-	__maybe_unused;
+	__attribute__ ((unused));
 static void crypto_skcipher_show(struct seq_file *m, struct crypto_alg *alg)
 {
 	struct skcipher_alg *skcipher = container_of(alg, struct skcipher_alg,
