@@ -1931,6 +1931,9 @@ CHIP_NAME ?= $(MODNAME)
 CDEFINES += -DMULTI_IF_NAME=\"$(CHIP_NAME)\"
 endif
 
+ccflags-y += $(call cc-option, -g0)
+ccflags-y += $(call cc-option, -Os)
+
 # WLAN_HDD_ADAPTER_MAGIC must be unique for all instances of the driver on the
 # system. If it is not defined, then the host driver will use the first 4
 # characters (including NULL) of MULTI_IF_NAME to construct
