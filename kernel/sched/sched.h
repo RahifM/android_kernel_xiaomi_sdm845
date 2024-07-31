@@ -4,7 +4,6 @@
 #include <linux/sched/rt.h>
 #include <linux/u64_stats_sync.h>
 #include <linux/sched/deadline.h>
-#include <linux/kernel_stat.h>
 #include <linux/binfmts.h>
 #include <linux/mutex.h>
 #include <linux/spinlock.h>
@@ -2213,7 +2212,8 @@ static inline void nohz_balance_exit_idle(unsigned int cpu) { }
 
 #ifdef CONFIG_IRQ_TIME_ACCOUNTING
 struct irqtime {
-	u64			tick_delta;
+	u64			hardirq_time;
+	u64			softirq_time;
 	u64			irq_start_time;
 	struct u64_stats_sync	sync;
 };
@@ -2223,13 +2223,12 @@ DECLARE_PER_CPU(struct irqtime, cpu_irqtime);
 static inline u64 irq_time_read(int cpu)
 {
 	struct irqtime *irqtime = &per_cpu(cpu_irqtime, cpu);
-	u64 *cpustat = kcpustat_cpu(cpu).cpustat;
 	unsigned int seq;
 	u64 total;
 
 	do {
 		seq = __u64_stats_fetch_begin(&irqtime->sync);
-		total = cpustat[CPUTIME_SOFTIRQ] + cpustat[CPUTIME_IRQ];
+		total = irqtime->softirq_time + irqtime->hardirq_time;
 	} while (__u64_stats_fetch_retry(&irqtime->sync, seq));
 
 	return total;
