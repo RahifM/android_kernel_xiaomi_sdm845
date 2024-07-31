@@ -13,6 +13,7 @@
 #include <linux/cpufreq.h>
 #include <linux/module.h>
 #include <linux/slab.h>
+#include <linux/cputime.h>
 #include "cpufreq_stats.h"
 
 static int cpufreq_stats_update(struct cpufreq_stats *stats)
