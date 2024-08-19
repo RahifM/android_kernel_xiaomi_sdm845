@@ -658,6 +658,7 @@ export LLVM_AR LLVM_DIS
 endif
 
 ifdef CONFIG_LTO_GCC
+$(info LTO GCC ENABLED)
 LTO_CFLAGS    := -flto -flto=jobserver -fno-fat-lto-objects \
                  -fuse-linker-plugin -fwhole-program
 KBUILD_CFLAGS += $(LTO_CFLAGS)
@@ -668,10 +669,16 @@ AR            := $(CROSS_COMPILE)gcc-ar
 NM            := $(CROSS_COMPILE)gcc-nm
 DISABLE_LTO   := -fno-lto
 export DISABLE_LTO LDFINAL
+$(info LTO_CFLAGS is $(LTO_CFLAGS))
+$(info LTO_LDFLAGS is $(LTO_LDFLAGS))
+$(info DISABLE_LTO is $(DISABLE_LTO))
+$(info LDFINAL is $(LDFINAL))
+$(info KBUILD_CFLAGS is $(KBUILD_CFLAGS))
 else
 LDFINAL       := $(LD)
 export LDFINAL
 endif
+$(info afterblock_KBUILD_CFLAGS is $(KBUILD_CFLAGS))
 
 # The arch Makefile can set ARCH_{CPP,A,C}FLAGS to override the default
 # values of the respective KBUILD_* variables
@@ -1866,3 +1873,5 @@ FORCE:
 # Declare the contents of the .PHONY variable as phony.  We keep that
 # information in a variable so we can use it in if_changed and friends.
 .PHONY: $(PHONY)
+
+$(info lastline_KBUILD_CFLAGS is $(KBUILD_CFLAGS))
