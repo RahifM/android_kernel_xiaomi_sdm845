@@ -657,7 +657,7 @@ LLVM_DIS	:= llvm-dis
 export LLVM_AR LLVM_DIS
 endif
 
-ifdef CONFIG_LTO
+ifdef CONFIG_LTO_GCC
 $(info LTO GCC ENABLED)
 LTO_CFLAGS    := -flto -flto=jobserver -fno-fat-lto-objects \
                  -fuse-linker-plugin -fwhole-program
