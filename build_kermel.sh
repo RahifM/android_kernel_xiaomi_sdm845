@@ -47,7 +47,7 @@ rm -rf beryllium*.zip
 # Start the build
 SECONDS=0
 make beryllium_stock_defconfig
-time make V=1 -j$(nproc --all) 2>&1 | tee bl-$(date +'%Y%m%d-%H%M').txt
+time make -j$(nproc --all) 2>&1 | tee bl-$(date +'%Y%m%d-%H%M').txt
 
 if [ "$(grep Image.gz $LOG | cut -d / -f 4)" == "" ] ; then
 	duration=$SECONDS
