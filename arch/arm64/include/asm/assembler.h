@@ -266,15 +266,11 @@ lr	.req	x30		// link register
 	 */
 	.macro adr_this_cpu, dst, sym, tmp
 	adr_l	\dst, \sym
-<<<<<<< HEAD
-	mrs	\tmp, tpidr_el1
-=======
 alternative_if_not ARM64_HAS_VIRT_HOST_EXTN
 	mrs	\tmp, tpidr_el1
 alternative_else
 	mrs	\tmp, tpidr_el2
 alternative_endif
->>>>>>> 8e8208a9903e49db06633b60932696d431ebd909
 	add	\dst, \dst, \tmp
 	.endm
 
@@ -285,15 +281,11 @@ alternative_endif
 	 */
 	.macro ldr_this_cpu dst, sym, tmp
 	adr_l	\dst, \sym
-<<<<<<< HEAD
-	mrs	\tmp, tpidr_el1
-=======
 alternative_if_not ARM64_HAS_VIRT_HOST_EXTN
 	mrs	\tmp, tpidr_el1
 alternative_else
 	mrs	\tmp, tpidr_el2
 alternative_endif
->>>>>>> 8e8208a9903e49db06633b60932696d431ebd909
 	ldr	\dst, [\dst, \tmp]
 	.endm
 

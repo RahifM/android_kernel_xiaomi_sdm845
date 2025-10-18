@@ -853,7 +853,6 @@ config HARDEN_BRANCH_PREDICTOR
 
 	  If unsure, say Y.
 
-<<<<<<< HEAD
 config PSCI_BP_HARDENING
 	depends on HARDEN_BRANCH_PREDICTOR
 	bool "Use PSCI get version to enable branch predictor hardening"
@@ -865,7 +864,7 @@ config PSCI_BP_HARDENING
 	  branch prediction attacks.
 
 	  If unsure, say N.
-=======
+
 config ARM64_SSBD
 	bool "Speculative Store Bypass Disable" if EXPERT
 	default y
@@ -874,7 +873,6 @@ config ARM64_SSBD
 	  by speculative loads.
 
 	  If unsure, say Y.
->>>>>>> 8e8208a9903e49db06633b60932696d431ebd909
 
 menuconfig ARMV8_DEPRECATED
 	bool "Emulate deprecated/obsolete ARMv8 instructions"
