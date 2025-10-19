@@ -28,7 +28,7 @@ fi
 if [ -d "arm64-gcc" ]; then
 	echo "arm64-gcc already exists"
 else
-	time git clone https://bitbucket.org/UBERTC/aarch64-linux-android-4.9-kernel -b master --depth 1 arm64-gcc
+	time git https://bitbucket.org/UBERTC/aarch64-linux-android-7.0-kernel -b master --depth 1 arm64-gcc
 fi
 
 if [ "$(whoami)" == "gitpod" ]; then
