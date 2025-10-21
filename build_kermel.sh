@@ -28,7 +28,7 @@ fi
 if [ -d "arm64-gcc" ]; then
 	echo "arm64-gcc already exists"
 else
-	time git clone https://bitbucket.org/UBERTC/aarch64-linux-android-7.0-kernel -b master --depth 1 arm64-gcc
+	time git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-gnu-9.3 -b lineage-23.0 --depth 1 arm64-gcc
 fi
 
 if [ "$(whoami)" == "gitpod" ]; then
